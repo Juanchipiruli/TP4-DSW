@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import './Form.css';
 
 export const Form = ({ fields, onSubmit, submitText = 'Enviar' }) => {
   const [formData, setFormData] = useState(
@@ -20,7 +21,7 @@ export const Form = ({ fields, onSubmit, submitText = 'Enviar' }) => {
     <form onSubmit={handleSubmit}>
       <fieldset>
         {fields.map(field => (
-          <div key={field.name}>
+          <div key={field.name} className='fieldmaicogay'>
             <label htmlFor={field.name}>{field.label}:</label>
             <input
               type={field.type}
@@ -32,8 +33,9 @@ export const Form = ({ fields, onSubmit, submitText = 'Enviar' }) => {
             />
           </div>
         ))}
+        <button type="submit">{submitText}</button>
       </fieldset>
-      <button type="submit">{submitText}</button>
+      
     </form>
   );
 };
