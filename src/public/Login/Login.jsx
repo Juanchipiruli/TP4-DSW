@@ -1,26 +1,22 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { AppRoutes } from "../../models/routes.models";
+import { Form } from "../../components";
+import { inputs } from "../../constants/inputs";
 
 export const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const handleSubmit = (formData) => {
+    // Aquí manejas el envío del formulario
+    console.log(formData);
+  }
 
   return (
     <main>
       <h1>Iniciar Sesión</h1>
-      <form>
-        <fieldset>
-          <div>
-            <label htmlFor="email">Email:</label>
-            <input type="text" name="email" value={email} onChange={setEmail} id="email"/>
-          </div>
-          <div>
-            <label htmlFor="password">Contraseña:</label>
-            <input type="password" name="email" value={password} onChange={setPassword} id="password"/>
-          </div>
-        </fieldset>
-      </form>
+      <Form 
+        fields={inputs.filter(input => input.name === 'email' || input.name === 'password')}
+        onSubmit={handleSubmit}
+        submitText="Iniciar Sesión"
+      />
       <footer>
         <Link to={AppRoutes.signUp}>No te has registrado aún?</Link>
       </footer>
