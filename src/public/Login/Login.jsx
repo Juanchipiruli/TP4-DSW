@@ -1,12 +1,28 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppRoutes } from "../../models/routes.models";
 import { Form } from "../../components";
 import { inputs } from "../../constants/inputs";
+import { useAuth } from "../../context/AuthContext";
+import { useState } from "react";
 
 export const Login = () => {
-  const handleSubmit = (formData) => {
-    // Aquí manejas el envío del formulario
-    console.log(formData);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async (formData) => {
+    try {
+      await login({
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      navigate(AppRoutes.admin);
+    } catch (error) {
+      setError(error.message);
+    }
   }
 
   return (

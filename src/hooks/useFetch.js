@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export const useFetch = (url, options = {}) => {
+export const useFetch = ({url, options = {}, autoFetch = true}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,10 +26,12 @@ export const useFetch = (url, options = {}) => {
       }
     };
 
+    if (!autoFetch) return;
+
     fetchData();
   }, [url]);
 
-  const refetch = async () => {
+  const refetch = async (options = {}) => {
     setLoading(true);
     try {
       const response = await fetch(url, options);
