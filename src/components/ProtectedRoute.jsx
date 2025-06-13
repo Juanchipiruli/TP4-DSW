@@ -1,11 +1,11 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-export const ProtectedRoute = ({ children, requireAdmin }) => {
+export const ProtectedRoute = ({ requireAdmin }) => {
   const { isAuthenticated, isAdmin, loading } = useAuth();
 
   if (loading) {
-    return <div>Cargando...</div>; // O tu componente de loading
+    return <div>Cargando...</div>;
   }
 
   if (!isAuthenticated()) {
@@ -16,5 +16,5 @@ export const ProtectedRoute = ({ children, requireAdmin }) => {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <Outlet />;
 };

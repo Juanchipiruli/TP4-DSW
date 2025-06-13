@@ -1,28 +1,20 @@
-import { HashRouter, Navigate, Route } from "react-router-dom";
+import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
 import { RoutesWithNotFound } from "./components/RoutesWithNotFound";
 import { AppRoutes } from "./models/routes.models";
 import { Login, SignUp } from "./public";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { PrivateRoutes } from "./components/PrivateRoutes";
 
 export const AppRouter = () => {
   return (
     <HashRouter>
       <RoutesWithNotFound>
         <Route path="/" element={<Navigate to={AppRoutes.login} />} />
-        <Route path="/login" element={<Login/>} />
-        <Route path="/signup" element={<SignUp/>} />
-        <Route path="/dashboard" element={
-          <ProtectedRoute>
-            <h1>Dashboard</h1>
-          </ProtectedRoute>
-        }
-        />
-        <Route path="/admin" element={
-          <ProtectedRoute requireAdmin>
-            <h1>Admin</h1>
-          </ProtectedRoute>
-        }
-        />
+        <Route path={AppRoutes.login} element={<Login/>} />
+        <Route path={AppRoutes.signUp} element={<SignUp/>} />
+        <Route element={<ProtectedRoute requireAdmin />}>
+          <Route path={AppRoutes.dashboard + "/*"} element={<PrivateRoutes />} />
+        </Route>
       </RoutesWithNotFound>
     </HashRouter>
   )

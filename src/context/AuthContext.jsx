@@ -45,9 +45,11 @@ export const AuthProvider = ({ children }) => {
     const verifyToken = async () => {
       try {
         const token = localStorage.getItem('token');
+        console.log(token);
         if (token) {
           // Verificar token con el backend
-          const response = await fetch('tu-api/verify-token', {
+          const response = await fetch('http://localhost:3000/api/users/validate-token/', {
+            method: 'POST',
             headers: { Authorization: `Bearer ${token}` }
           });
           const data = await response.json();

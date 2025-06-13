@@ -3,5 +3,8 @@ export const AppRoutes = { //Modelo que contiene las rutas validas de nuestra pa
   signUp: '/signup',
   home: '/home',
   dashboard: '/dashboard',
+  dashboardEdit: '/dashboard/edit',
+  dashboardNew: '/dashboard/new',
+  dashboardView: '/dashboard/view',
   admin: '/admin'
 }
