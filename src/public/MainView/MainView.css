@@ -17,9 +17,11 @@ html, body {
 
 .mainview-header {
   width: 100%;
+  display: flex;
+  justify-content: space-between;
   background: #181818;
   color: #fff;
-  padding: clamp(1rem, 4vw, 2.5rem) 0 clamp(0.5rem, 2vw, 1rem) 0;
+  padding: clamp(0.5rem, 2vw, 1rem) 0 clamp(0.5rem, 2vw, 1rem) 0;
   text-align: center;
   font-size: clamp(1.5rem, 5vw, 2.5rem);
   letter-spacing: 0.2em;
@@ -29,7 +31,32 @@ html, body {
   flex-shrink: 0;
   box-sizing: border-box;
 }
-
+.mainview-header-logo{
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+.mainview-header-buttons{
+  width: clamp(70px, 100%, 100px);
+  margin-right: clamp(10px, 2vw, 2rem);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mainview-header-button{
+  width: clamp(10px, 40px, 40px);
+  height: clamp(10px, 40px, 40px);
+}
+.mainview-header-button a {
+  width: 100%;
+  padding: 0.5rem 0.5rem;
+  text-decoration: none;
+  color: #fff;
+  transition: all 0.4s;
+}
+.mainview-header-button a:hover {
+  transform: scale(1.1);
+}
 .mainview-grid {
   flex: 1;
   display: grid;
@@ -71,8 +98,4 @@ h1{
   margin:0px;
   border: none;
   padding: 0;
-}
-.mainview-header-button a {
-  text-decoration: none;
-  color: #fff;
 }

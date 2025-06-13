@@ -3,10 +3,14 @@ import TarjetasPrenda from "../../components/TarjetasPrenda/TarjetasPrenda";
 import "./MainView.css";
 import { Link, useNavigate } from "react-router-dom";
 import { AppRoutes } from "../../models/routes.models";
+import logo from "../../assets/logo.png";
+import { FaRegUser } from "react-icons/fa";
+import { FaCartShopping } from "react-icons/fa6";
 
 export const MainView = () => {
   const [prendas, setPrendas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Cambia la URL por la de tu backend
@@ -27,10 +31,13 @@ export const MainView = () => {
   return (
     <div className="mainview-container">
       <header className="mainview-header">
-        <h1>hola</h1>
+        <img src={logo} alt="logo" className="mainview-header-logo"/>
         <div className="mainview-header-buttons">
-          <button className="mainview-header-button">
-            <Link to={AppRoutes.login}>Login</Link>
+          <button className="mainview-header-button" onClick={() => navigate(AppRoutes.login)}>
+            <FaRegUser />
+          </button>
+          <button className="mainview-header-button" onClick={() => navigate(AppRoutes.login)}>
+          <FaCartShopping />
           </button>
         </div>
       </header>
