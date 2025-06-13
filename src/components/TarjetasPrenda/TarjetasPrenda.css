@@ -1,0 +1,57 @@
+.tarjeta-prenda {
+  background: #181818;
+  color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.7);
+  width: 350px;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+}
+
+.tarjeta-prenda:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.9);
+}
+
+.tarjeta-img-container {
+  width: 100%;
+  height: 420px;
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tarjeta-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tarjeta-info {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tarjeta-nombre {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.tarjeta-precio {
+  color: #ffb300;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.tarjeta-detalle {
+  font-size: 0.95rem;
+  color: #ccc;
+  margin: 0;
+}
