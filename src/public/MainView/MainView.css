@@ -1,36 +1,63 @@
-body {
-  background: #111;
+html, body {
+  height: 100%;
   margin: 0;
+  padding: 0;
+  background: #111;
   font-family: 'Segoe UI', Arial, sans-serif;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Previene scroll horizontal */
 }
 
 .mainview-container {
   min-height: 100vh;
   background: #111;
+  display: flex;
+  flex-direction: column;
 }
 
 .mainview-header {
-    height: 100px;
   width: 100%;
   background: #181818;
   color: #fff;
-  padding: 2rem 0 1rem 0;
+  padding: clamp(1rem, 4vw, 2.5rem) 0 clamp(0.5rem, 2vw, 1rem) 0;
   text-align: center;
-  font-size: 2.5rem;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
   letter-spacing: 0.2em;
   font-weight: bold;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-  margin-bottom: 2rem;
+  margin-bottom: 0;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .mainview-grid {
-  max-width: 1200px;
-  margin: 0 auto;
+  flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
-  padding: 0 2rem 2rem 2rem;
+  grid-template-columns: 1fr;
+  gap: clamp(1rem, 2vw, 2rem);
+  padding: clamp(1rem, 2vw, 2rem);
+  width: 100%; /* Cambiado de 100vw a 100% */
+  box-sizing: border-box;
+  align-items: start;
   justify-items: center;
+  background: #111;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden; /* Previene scroll horizontal */
+}
+
+/* Tablet: 2 columnas */
+@media (min-width: 600px) {
+  .mainview-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop: 4 columnas */
+@media (min-width: 1024px) {
+  .mainview-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .mainview-loading {
@@ -40,7 +67,12 @@ body {
 }
 
 h1{
-    margin:0px;
-    border: none;
-    padding: 0;
+  cursor: default;
+  margin:0px;
+  border: none;
+  padding: 0;
+}
+.mainview-header-button a {
+  text-decoration: none;
+  color: #fff;
 }

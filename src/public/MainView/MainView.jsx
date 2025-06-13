@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import TarjetasPrenda from "../../components/TarjetasPrenda/TarjetasPrenda";
 import "./MainView.css";
+import { Link, useNavigate } from "react-router-dom";
+import { AppRoutes } from "../../models/routes.models";
 
 export const MainView = () => {
   const [prendas, setPrendas] = useState([]);
@@ -26,6 +28,11 @@ export const MainView = () => {
     <div className="mainview-container">
       <header className="mainview-header">
         <h1>hola</h1>
+        <div className="mainview-header-buttons">
+          <button className="mainview-header-button">
+            <Link to={AppRoutes.login}>Login</Link>
+          </button>
+        </div>
       </header>
       <div className="mainview-grid">
         {prendas.map((prenda) => (
