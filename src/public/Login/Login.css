@@ -1,0 +1,27 @@
+h1{
+    width: 100%;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color: whitesmoke;
+    box-shadow: 0px 3.5px 0px 0px var(--secondary-color);
+    transition: all 0.4s;
+}
+h1:hover{
+    color: #ff0000;
+    box-shadow: 0px 3.5px 0px 0px #ff0000;
+}
+footer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+footer a{
+    text-decoration: none;
+    color: whitesmoke;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    box-shadow: 0px 3.5px 0px 0px var(--secondary-color);
+    transition: all 0.4s;
+}
+footer a:hover{
+    color: #ff0000;
+    box-shadow: 0px 3.5px 0px 0px #ff0000;
+}

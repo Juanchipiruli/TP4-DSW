@@ -1,6 +1,9 @@
 :root {
   --primary-color: #007bff;
-  --secondary-color: #6c757d;
-  --background-color: #880000;
-  
+  --secondary-color: #880000;
+  --background-color: #1f2124;
+  --dark-background: #0e0f11;
+}
+body{
+  background: radial-gradient(circle 320px ,var(--background-color), var(--dark-background));
 }

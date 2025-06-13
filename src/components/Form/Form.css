@@ -1,12 +1,21 @@
+form{
+    display: flex;
+    justify-content: center;    
+    background: none;
+    height: 500px;
+}
+
 fieldset{
+    border: none;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
     height: 250px;
+    height: clamp(100px, 80%, 250px);
     width: 50%;
     margin: auto;
-    background-color: #1f2124;
+    background: none;
 
 }
 .fieldmaicogay{
@@ -24,17 +33,24 @@ fieldset{
     background-color:#1f2124;
     height: 30px;
     border: none;
-    border-bottom: 1px solid #880000;
     font-size: large;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    transition: all 0.4s;
+}
+.fieldmaicogay input:hover{
+    box-shadow: 0px 3.5px 0px 0px var(--secondary-color);
+}
+.fieldmaicogay input:focus{
+    outline: none;
+    box-shadow: 0px 3.5px 0px 0px var(--secondary-color);
 }
 button{
     height: 45px;
     width: 150px;
     border: none;
     border-radius: 5px;
-    background-color: #880000;
-    color: #1f2124;
+    background-color: var(--secondary-color);
+    color: whitesmoke;
     font-size: large;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     cursor: pointer;    
@@ -43,7 +59,7 @@ button{
 
 button:hover{   
     transform: scale(1.04);
-    background-color: #1f2124;
-    color: #880000;
-    box-shadow: 3px 3px 2px 0px #880000;
+    background-color: var(--background-color);
+    color: var(--secondary-color);
+    box-shadow: 3px 3px 2px 0px var(--secondary-color);
 }

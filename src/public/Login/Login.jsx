@@ -4,6 +4,7 @@ import { Form } from "../../components";
 import { inputs } from "../../constants/inputs";
 import { useAuth } from "../../context/AuthContext";
 import { useState } from "react";
+import './Login.css';
 
 export const Login = () => {
   const { login } = useAuth();
