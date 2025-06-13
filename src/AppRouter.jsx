@@ -9,7 +9,7 @@ export const AppRouter = () => {
   return (
     <HashRouter>
       <RoutesWithNotFound>
-        <Route path="/" element={<Navigate to={AppRoutes.login} />} />
+        <Route path="/" element={<Navigate to={AppRoutes.mainView} />} />
         <Route path={AppRoutes.login} element={<Login/>} />
         <Route path={AppRoutes.signUp} element={<SignUp/>} />
         <Route path={AppRoutes.mainView} element={<MainView/>} />
