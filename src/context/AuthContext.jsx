@@ -5,6 +5,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(null);
 
   // Función para iniciar sesión
   const login = async (credentials) => {
@@ -44,7 +45,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const token = localStorage.getItem('token');
+        setToken(localStorage.getItem('token'));
         console.log(token);
         if (token) {
           // Verificar token con el backend
@@ -63,7 +64,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     verifyToken();
-  }, []);
+  }, [token]);
 
   const value = {
     user,
@@ -71,7 +72,8 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     isAuthenticated,
-    isAdmin
+    isAdmin,
+    token
   };
 
   return (

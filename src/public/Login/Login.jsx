@@ -13,14 +13,13 @@ export const Login = () => {
 
   useEffect(() => {
     if (user) {
-      console.log(user);
       if (user.isAdmin) {
         return navigate(AppRoutes.dashboard);
       } else {
         return (<h1>Principal</h1>)
       }
     }
-  }, []);
+  }, [user]);
 
   const handleSubmit = async (formData) => {
     try {

@@ -3,7 +3,6 @@ import { RoutesWithNotFound } from './RoutesWithNotFound';
 import { Dashboard } from '../private';
 
 export const PrivateRoutes = () => {
-  console.log('PrivateRoutes');
   return (
     <RoutesWithNotFound>
       <Route path="/" element={<Dashboard />} />
