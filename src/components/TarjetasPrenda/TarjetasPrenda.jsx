@@ -1,12 +1,19 @@
 import placeholderImg from "../../assets/placeholder.png";
 import "./TarjetasPrenda.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AppRoutes } from "../../models/routes.models";
 
 const TarjetasPrenda = ({ prenda }) => {
   const [imgSrc, setImgSrc] = useState(prenda.imagenes);
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/prenda/${prenda.id}`);
+  };
 
   return (
-    <div className="tarjeta-prenda">
+    <div className="tarjeta-prenda" onClick={handleClick}>
       <div className="tarjeta-img-container">
         {prenda.imagenes ? (
           <img

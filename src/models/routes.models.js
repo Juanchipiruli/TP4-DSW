@@ -6,5 +6,6 @@ export const AppRoutes = { //Modelo que contiene las rutas validas de nuestra pa
   dashboardNew: '/dashboard/new',
   dashboardView: '/dashboard/view',
   admin: '/admin',
-  mainView: '/home'
+  mainView: '/home',
+  detallePrenda: '/prenda/:id'
 }
