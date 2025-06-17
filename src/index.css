@@ -7,3 +7,22 @@
 body{
   background: radial-gradient(circle 320px ,var(--background-color), var(--dark-background));
 }
+button{
+  height: 45px;
+  width: 150px;
+  border: none;
+  border-radius: 5px;
+  background-color: var(--secondary-color);
+  color: whitesmoke;
+  font-size: large;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  cursor: pointer;    
+  transition: transform 0.4s, background-color 0.4s, color 0.4s, box-shadow 0.4s;
+}
+
+button:hover{   
+  transform: scale(1.04);
+  background-color: var(--background-color);
+  color: var(--secondary-color);
+  box-shadow: 3px 3px 2px 0px var(--secondary-color);
+}

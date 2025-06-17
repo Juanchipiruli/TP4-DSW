@@ -3,11 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { AppRoutes } from "../../models/routes.models";
 import placeholderImg from "../../assets/placeholder.png";
 import "./DetallePrenda.css";
+import { FaCartShopping } from "react-icons/fa6";
+import { IoReturnUpBack } from "react-icons/io5";
 
 export const DetallePrenda = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [prenda, setPrenda] = useState(null);
+  const [stock, setStock] = useState([]);
   const [loading, setLoading] = useState(true);
   const [colorSeleccionado, setColorSeleccionado] = useState("");
   const [talleSeleccionado, setTalleSeleccionado] = useState("");
@@ -19,24 +22,92 @@ export const DetallePrenda = () => {
       .then((res) => res.json())
       .then((data) => {
         setPrenda(data);
+        // Obtener el stock de esta prenda
+        return fetch(`http://localhost:3000/api/stocks/product/${id}`);
+      })
+      .then((res) => res.json())
+      .then((stockData) => {
+        setStock(stockData);
         setLoading(false);
-        // Seleccionar el primer color y talle por defecto
-        if (data.colores && data.colores.length > 0) {
-          setColorSeleccionado(data.colores[0]);
-        }
-        if (data.talles && data.talles.length > 0) {
-          setTalleSeleccionado(data.talles[0]);
+        
+        // Seleccionar el primer color y talle disponible por defecto
+        if (stockData.length > 0) {
+          const primerStock = stockData.find(s => s.disponible && s.cantidad > 0);
+          if (primerStock) {
+            setColorSeleccionado(primerStock.Color.nombre);
+            setTalleSeleccionado(primerStock.Talle.nombre);
+          }
         }
       })
       .catch((err) => {
-        console.error("Error al obtener la prenda:", err);
+        console.error("Error al obtener la prenda o stock:", err);
         setLoading(false);
       });
   }, [id]);
 
+  // Obtener colores únicos disponibles
+  const getColoresDisponibles = () => {
+    const coloresUnicos = [];
+    stock.forEach((item) => {
+      const colorExiste = coloresUnicos.find(c => c.nombre === item.Color.nombre);
+      if (!colorExiste) {
+        coloresUnicos.push({
+          nombre: item.Color.nombre,
+          codigo_hex: item.Color.codigo_hex,
+          disponible: item.disponible && item.cantidad > 0
+        });
+      }
+    });
+    return coloresUnicos;
+  };
+
+  // Obtener talles únicos disponibles
+  const getTallesDisponibles = () => {
+    const tallesUnicos = [];
+    stock.forEach((item) => {
+      const talleExiste = tallesUnicos.find(t => t.nombre === item.Talle.nombre);
+      if (!talleExiste) {
+        tallesUnicos.push({
+          nombre: item.Talle.nombre,
+          disponible: item.disponible && item.cantidad > 0
+        });
+      }
+    });
+    return tallesUnicos;
+  };
+
+  // Verificar si una combinación color-talle está disponible
+  const isCombinacionDisponible = (color, talle) => {
+    return stock.some(item => 
+      item.Color.nombre === color && 
+      item.Talle.nombre === talle && 
+      item.disponible && 
+      item.cantidad > 0
+    );
+  };
+
+  // Obtener cantidad disponible para la combinación seleccionada
+  const getCantidadDisponible = () => {
+    const stockItem = stock.find(item => 
+      item.Color.nombre === colorSeleccionado && 
+      item.Talle.nombre === talleSeleccionado
+    );
+    return stockItem ? stockItem.cantidad : 0;
+  };
+
   const handleAgregarAlCarrito = () => {
     if (!colorSeleccionado || !talleSeleccionado) {
       alert("Por favor selecciona un color y un talle");
+      return;
+    }
+
+    if (!isCombinacionDisponible(colorSeleccionado, talleSeleccionado)) {
+      alert("Esta combinación de color y talle no está disponible");
+      return;
+    }
+
+    if (cantidad > getCantidadDisponible()) {
+      alert(`Solo hay ${getCantidadDisponible()} unidades disponibles`);
       return;
     }
 
@@ -64,6 +135,10 @@ export const DetallePrenda = () => {
     return <div className="detalle-error">Prenda no encontrada</div>;
   }
 
+  const coloresDisponibles = getColoresDisponibles();
+  const tallesDisponibles = getTallesDisponibles();
+  const cantidadDisponible = getCantidadDisponible();
+
   return (
     <div className="detalle-container">
       <header className="detalle-header">
@@ -71,7 +146,7 @@ export const DetallePrenda = () => {
           className="detalle-back-button"
           onClick={() => navigate(AppRoutes.mainView)}
         >
-          ← Volver
+          <IoReturnUpBack />
         </button>
         <h1 className="detalle-title">Detalle del Producto</h1>
       </header>
@@ -104,19 +179,24 @@ export const DetallePrenda = () => {
           <p className="detalle-descripcion">{prenda.detalle}</p>
 
           {/* Selector de colores */}
-          {prenda.colores && prenda.colores.length > 0 && (
+          {coloresDisponibles.length > 0 && (
             <div className="detalle-selector">
               <h3>Color:</h3>
               <div className="detalle-colores">
-                {prenda.colores.map((color, index) => (
+                {coloresDisponibles.map((color, index) => (
                   <button
                     key={index}
                     className={`detalle-color-btn ${
-                      colorSeleccionado === color ? "seleccionado" : ""
-                    }`}
-                    onClick={() => setColorSeleccionado(color)}
+                      colorSeleccionado === color.nombre ? "seleccionado" : ""
+                    } ${!color.disponible ? "no-disponible" : ""}`}
+                    onClick={() => setColorSeleccionado(color.nombre)}
+                    disabled={!color.disponible}
+                    style={{
+                      backgroundColor: color.codigo_hex,
+                      borderColor: color.disponible ? color.codigo_hex : "#666"
+                    }}
                   >
-                    {color}
+                    {color.nombre}
                   </button>
                 ))}
               </div>
@@ -124,22 +204,30 @@ export const DetallePrenda = () => {
           )}
 
           {/* Selector de talles */}
-          {prenda.talles && prenda.talles.length > 0 && (
+          {tallesDisponibles.length > 0 && (
             <div className="detalle-selector">
               <h3>Talle:</h3>
               <div className="detalle-talles">
-                {prenda.talles.map((talle, index) => (
+                {tallesDisponibles.map((talle, index) => (
                   <button
                     key={index}
                     className={`detalle-talle-btn ${
-                      talleSeleccionado === talle ? "seleccionado" : ""
-                    }`}
-                    onClick={() => setTalleSeleccionado(talle)}
+                      talleSeleccionado === talle.nombre ? "seleccionado" : ""
+                    } ${!talle.disponible ? "no-disponible" : ""}`}
+                    onClick={() => setTalleSeleccionado(talle.nombre)}
+                    disabled={!talle.disponible}
                   >
-                    {talle}
+                    {talle.nombre}
                   </button>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Información de disponibilidad */}
+          {colorSeleccionado && talleSeleccionado && (
+            <div className="detalle-disponibilidad">
+              <p>Disponible: {cantidadDisponible} unidades</p>
             </div>
           )}
 
@@ -150,13 +238,15 @@ export const DetallePrenda = () => {
               <button
                 className="detalle-cantidad-btn"
                 onClick={() => setCantidad(Math.max(1, cantidad - 1))}
+                disabled={cantidad <= 1}
               >
                 -
               </button>
               <span className="detalle-cantidad-valor">{cantidad}</span>
               <button
                 className="detalle-cantidad-btn"
-                onClick={() => setCantidad(cantidad + 1)}
+                onClick={() => setCantidad(Math.min(cantidadDisponible, cantidad + 1))}
+                disabled={cantidad >= cantidadDisponible}
               >
                 +
               </button>
@@ -167,9 +257,9 @@ export const DetallePrenda = () => {
           <button
             className="detalle-agregar-btn"
             onClick={handleAgregarAlCarrito}
-            disabled={!colorSeleccionado || !talleSeleccionado}
+            disabled={!colorSeleccionado || !talleSeleccionado || cantidadDisponible === 0}
           >
-            Agregar al Carrito
+            {cantidadDisponible === 0 ? "No disponible" : <FaCartShopping />}
           </button>
         </div>
       </div>
