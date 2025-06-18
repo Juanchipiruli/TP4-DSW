@@ -1,0 +1,9 @@
+.error {
+  background-color: var(--secondary-color);
+  padding: 20px;
+  text-align: center;
+}
+
+.text-error {
+  color: whitesmoke;
+}

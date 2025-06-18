@@ -43,7 +43,7 @@ export const MainView = () => {
       </header>
       <div className="mainview-grid">
         {prendas.map((prenda) => (
-          <TarjetasPrenda key={prenda._id} prenda={prenda} />
+          <TarjetasPrenda key={prenda.id} prenda={prenda} />
         ))}
       </div>
     </div>

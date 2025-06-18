@@ -5,6 +5,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [token, setToken] = useState(null);
 
   // Función para iniciar sesión
@@ -15,8 +16,6 @@ export const AuthProvider = ({ children }) => {
       const response = await fetch('http://localhost:3000/api/users/login/', credentials);
       
       const data = await response.json();
-
-      console.log(data);
       
       if (!response.ok) throw new Error(data.message);
       
@@ -24,6 +23,11 @@ export const AuthProvider = ({ children }) => {
       // Guardar token en localStorage
       localStorage.setItem('token', data.token);
       return data;
+    } catch (err) {
+      setError(err.message);
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
     } finally {
       setLoading(false);
     }
@@ -54,9 +58,17 @@ export const AuthProvider = ({ children }) => {
             headers: { Authorization: `Bearer ${token}` }
           });
           const data = await response.json();
-          if (response.ok) setUser(data.user);
+          if (response.ok) {
+            setUser(data.user);
+          } else {
+            throw new Error(data.message);
+          }
         }
       } catch (error) {
+        setError(error.message);
+        setTimeout(() => {
+          setError(null);
+        }, 3000);
         console.error('Error verificando token:', error);
       } finally {
         setLoading(false);
@@ -69,6 +81,7 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    error,
     login,
     logout,
     isAuthenticated,
