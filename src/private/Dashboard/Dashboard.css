@@ -1,0 +1,7 @@
+#panelCreate {
+  display: none;
+}
+
+#panelCreate.show {
+  display: block;
+}
