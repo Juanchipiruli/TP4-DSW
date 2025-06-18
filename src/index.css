@@ -8,6 +8,7 @@ body{
   background: radial-gradient(circle 320px ,var(--background-color), var(--dark-background));
 }
 button{
+  margin: 0px 10px;
   height: 45px;
   width: 150px;
   border: none;

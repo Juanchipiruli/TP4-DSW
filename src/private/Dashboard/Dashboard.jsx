@@ -4,6 +4,9 @@ import { useFetch } from "../../hooks/useFetch";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import './Dashboard.css';
+import { CiEdit } from "react-icons/ci";
+import { CiTrash } from "react-icons/ci";
+import { CiCirclePlus } from "react-icons/ci";
 
 export const Dashboard = () => {
   const [clothes, setClothes] = useState([]);
@@ -73,13 +76,13 @@ export const Dashboard = () => {
     }
   }, [dataSizes])
 
-  const handleOpenEdit = () => {
-    const modal = document.querySelector("#modalEdit");
+  const handleOpenEdit = (id) => {
+    const modal = document.querySelector(`#modal${id}`);
     modal.showModal();
   }
 
-  const handleCloseEdit = () => {
-    const modal = document.querySelector("#modalEdit");
+  const handleCloseEdit = (id) => {
+    const modal = document.querySelector(`#modal${id}`);
     modal.close();
   }
 
@@ -100,8 +103,8 @@ export const Dashboard = () => {
     }
   }
 
-  const handleCreate = async () => {
-    const panelCreate = document.querySelector('#panelCreate');
+  const handleCreate = async (id) => {
+    const panelCreate = document.querySelector(`#panelCreate-${id}`);
 
     if (panelCreate !== "show") {
       await refetchColors({
@@ -128,6 +131,11 @@ export const Dashboard = () => {
     panelCreate.classList.toggle('show');
   }
 
+  const handleCreatePrenda = () => {
+    const panelCreate = document.querySelector('#panelCreate');
+    panelCreate.classList.toggle('show');
+  }
+
   if (loadingClothes) return <h1>Cargando...</h1>;
 
   if (errorClothes) return <h1>Error: {errorClothes}</h1>;
@@ -135,31 +143,39 @@ export const Dashboard = () => {
   return (
     <main>
       <h1>Dashboard</h1>
-      <h2>Prendas</h2>
+      <header className="dashboard-header">
+        <h2>Prendas</h2>
+        <button onClick={() => handleOpenEdit("Create")}><CiCirclePlus /></button>
+      </header>
       {clothes &&
         clothes.map((clothe, index) => (
-          <div key={index}>
+          <div key={index} className="dashboard-clothe">
             <header>
-              <div>
+              <div className="dashboard-clothe-info">
                 <img
                   src={clothe.imagenes}
                   alt={`Imagen de la prenda ${clothe.nombre}`}
                 />
                 <h3>{clothe.nombre}</h3>
               </div>
-              <div>
-                <button onClick={handleOpenEdit}>Editar</button>
-                <button onClick={() => handleDelete(clothe.id)}>Eliminar</button>
-                <button onClick={handleCreate}>Crear</button>
+              <div className="dashboard-clothe-buttons">
+                <button id="edit" onClick={() => handleOpenEdit("Edit")}><CiEdit /></button>
+                <button onClick={() => handleDelete(clothe.id)}><CiTrash /></button>
+                <button onClick={() => handleCreate(clothe.id)}><CiCirclePlus /></button>
               </div>
             </header>
             <main>
               <dialog id="modalEdit">
                 <h4>Editar Prenda</h4>
-                <button onClick={handleCloseEdit}>Cerrar</button>
+                <button onClick={() => handleCloseEdit("Edit")}>Cerrar</button>
                 <button>Guardar</button>
               </dialog>
-              <header id="panelCreate">
+              <dialog id="modalCreate">
+                <h4>Crear Prenda</h4>
+                <button onClick={() => handleCloseEdit("Create")}>Cerrar</button>
+                <button>Guardar</button>
+              </dialog>
+              <header className="panelCreate" id={`panelCreate-${clothe.id}`}>
                 <h4>Crear Stocks</h4>
                 <div>
                   <label htmlFor="cantidad">Cantidad:</label>

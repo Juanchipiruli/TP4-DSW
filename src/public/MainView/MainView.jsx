@@ -6,25 +6,30 @@ import { AppRoutes } from "../../models/routes.models";
 import logo from "../../assets/logo.png";
 import { FaRegUser } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
+import { useFetch } from "../../hooks/useFetch";
 
 export const MainView = () => {
   const [prendas, setPrendas] = useState([]);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const {data, loading, error} = useFetch({
+    url: "http://localhost:3000/api/prendas/",
+    options: {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  })
+  
   useEffect(() => {
-    // Cambia la URL por la de tu backend
-    fetch("http://localhost:3000/api/prendas")
-      .then((res) => res.json())
-      .then((data) => {
-        setPrendas(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error al obtener prendas:", err);
-        setLoading(false);
-      });
-  }, []);
+    if (data) {
+      setPrendas(data);
+    }else{
+      setPrendas([]);
+      console.log(error);
+    }
+  }, [data]); 
 
   if (loading) return <div className="mainview-loading">Cargando prendas...</div>;
 
