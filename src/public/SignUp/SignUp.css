@@ -1,0 +1,8 @@
+.Register-Main{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+.Register-Footer{
+    margin-top: 30px;
+}

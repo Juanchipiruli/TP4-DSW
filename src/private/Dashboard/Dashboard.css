@@ -67,12 +67,12 @@
   width: 100%;
 }
 
-button{
+.dashboard-clothe-button{
   width: clamp(10px, 35px, 35px);
   height: clamp(10px, 35px, 35px);
   margin: 10px 10px;
 }
 
-button:hover{
+.dashboard-clothe-button:hover{
   background-color: var(--dark-background);
 }

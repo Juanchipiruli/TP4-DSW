@@ -1,0 +1,87 @@
+.user-sidebar {
+    position: fixed;
+    top: 0;
+    right: -350px; /* Oculto por defecto */
+    width: 350px;
+    height: 100vh;
+    background: var(--background-color);
+    color: whitesmoke;
+    box-shadow: -2px 0 8px rgba(0,0,0,0.10);
+    transition: right 0.3s;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .user-sidebar.open {
+    right: 0;
+  }
+  
+  .sidebar-header {
+    font-weight: bold;
+    font-size: 1.3rem;
+    padding: 24px 24px 12px 24px;
+    border-bottom: 1px solid var(--secondary-color);
+    display: flex;
+    justify-content: right;
+    align-items: center;
+  }
+  
+  .sidebar-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+  }
+
+  .sidebar-btn {
+    all: unset;
+    width: 100%;
+    background: var(--background-color);
+    color: whitesmoke;
+    border: none;
+    outline: none;
+    padding: 20px 24px;
+    text-align: left;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid var(--secondary-color);
+  }
+  .close-btn {
+    all: unset;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: whitesmoke;
+  }
+  .close-btn:hover,
+  .close-btn:focus {
+    transform: scale(1);
+    box-shadow: 0 0 0px 0 rgba(0, 0, 0, 0.1);
+  }
+  .sidebar-btn:hover,
+  .sidebar-btn:focus {
+    transform: scale(1);
+    background: var(--dark-background);
+    box-shadow: 0 0 0px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .sidebar-btn-spacer {
+    display: flex;
+    align-items: right;
+  }
+  
+  .logout-btn-container {
+    display: flex;
+    justify-content: right;
+  }
+
+  .logout-btn {
+    margin-bottom: 20px;
+    right: 0;
+    background: var(--secondary-color);
+    color: whitesmoke;
+    border-bottom: none;
+  }

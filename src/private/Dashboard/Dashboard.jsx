@@ -145,7 +145,7 @@ export const Dashboard = () => {
       <h1>Dashboard</h1>
       <header className="dashboard-header">
         <h2>Prendas</h2>
-        <button onClick={() => handleOpenEdit("Create")}><CiCirclePlus /></button>
+        <button className="dashboard-clothe-button" onClick={() => handleOpenEdit("Create")}><CiCirclePlus /></button>
       </header>
       {clothes &&
         clothes.map((clothe, index) => (
@@ -159,9 +159,9 @@ export const Dashboard = () => {
                 <h3>{clothe.nombre}</h3>
               </div>
               <div className="dashboard-clothe-buttons">
-                <button id="edit" onClick={() => handleOpenEdit("Edit")}><CiEdit /></button>
-                <button onClick={() => handleDelete(clothe.id)}><CiTrash /></button>
-                <button onClick={() => handleCreate(clothe.id)}><CiCirclePlus /></button>
+                <button className="dashboard-clothe-button" onClick={() => handleOpenEdit("Edit")}><CiEdit /></button>
+                <button className="dashboard-clothe-button" onClick={() => handleDelete(clothe.id)}><CiTrash /></button>
+                <button className="dashboard-clothe-button" onClick={() => handleCreate(clothe.id)}><CiCirclePlus /></button>
               </div>
             </header>
             <main>

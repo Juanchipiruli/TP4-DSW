@@ -7,10 +7,14 @@ import logo from "../../assets/logo.png";
 import { FaRegUser } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
 import { useFetch } from "../../hooks/useFetch";
+import { UserSidebar } from "../../components/UserSidebar/UserSidebar.jsx";
+import { useAuth } from "../../context/AuthContext";
 
 export const MainView = () => {
   const [prendas, setPrendas] = useState([]);
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   const {data, loading, error} = useFetch({
     url: "http://localhost:3000/api/prendas/",
@@ -38,11 +42,20 @@ export const MainView = () => {
       <header className="mainview-header">
         <img src={logo} alt="logo" className="mainview-header-logo"/>
         <div className="mainview-header-buttons">
-          <button className="mainview-header-button" onClick={() => navigate(AppRoutes.login)}>
+          <button
+            className="mainview-header-button"
+            onClick={() => {
+              if (isAuthenticated()) {
+                setSidebarOpen(true);
+              } else {
+                navigate(AppRoutes.login);
+              }
+            }}
+          >
             <FaRegUser />
           </button>
           <button className="mainview-header-button" onClick={() => navigate(AppRoutes.login)}>
-          <FaCartShopping />
+            <FaCartShopping />
           </button>
         </div>
       </header>
@@ -51,6 +64,12 @@ export const MainView = () => {
           <TarjetasPrenda key={prenda.id} prenda={prenda} />
         ))}
       </div>
+      <UserSidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        onProductos={() => alert("Ir a productos")}
+        onLogout={() => alert("Cerrar sesión")}
+      />
     </div>
   );
 };
