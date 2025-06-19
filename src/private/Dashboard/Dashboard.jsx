@@ -3,13 +3,15 @@ import { AppRoutes } from "../../models/routes.models";
 import { useFetch } from "../../hooks/useFetch";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
-import './Dashboard.css';
+import "./Dashboard.css";
 import { CiEdit } from "react-icons/ci";
 import { CiTrash } from "react-icons/ci";
 import { CiCirclePlus } from "react-icons/ci";
 
 export const Dashboard = () => {
   const [clothes, setClothes] = useState([]);
+  const [stocks, setStocks] = useState([]);
+  const [stocksView, setStocksView] = useState([]);
   const [colors, setColors] = useState([]);
   const [sizes, setSizes] = useState([]);
 
@@ -58,9 +60,17 @@ export const Dashboard = () => {
     dataSizes = responseSizes.data;
   }, [responseSizes]);
 
+  const responseCreateStock = useFetch({ autoFetch: false });
+
+  const refetchCreateStock = responseCreateStock.refetch;
+
+  const responseDataStocks = useFetch({ autoFetch: false });
+
+  const refetchDataStocks = responseDataStocks.refetch;
+
   useEffect(() => {
     setClothes(dataClothes);
-  }, [dataClothes])
+  }, [dataClothes]);
 
   useEffect(() => {
     console.log("Colores: ", colors);
@@ -74,17 +84,17 @@ export const Dashboard = () => {
     if (dataSizes) {
       setSizes(dataSizes);
     }
-  }, [dataSizes])
+  }, [dataSizes]);
 
   const handleOpenEdit = (id) => {
     const modal = document.querySelector(`#modal${id}`);
     modal.showModal();
-  }
+  };
 
   const handleCloseEdit = (id) => {
     const modal = document.querySelector(`#modal${id}`);
     modal.close();
-  }
+  };
 
   const handleDelete = async (id) => {
     await refetch({
@@ -93,15 +103,15 @@ export const Dashboard = () => {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` 
-        }
-      }
-    })
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    });
 
     if (!errorDeleteClothe) {
-      setClothes(clothes.filter(clothe => clothe.id !== id));
+      setClothes(clothes.filter((clothe) => clothe.id !== id));
     }
-  }
+  };
 
   const handleCreate = async (id) => {
     const panelCreate = document.querySelector(`#panelCreate-${id}`);
@@ -112,9 +122,9 @@ export const Dashboard = () => {
         options: {
           method: "GET",
           headers: {
-            "Content-Type": "application/json"
-          }
-        }
+            "Content-Type": "application/json",
+          },
+        },
       });
 
       await refetchSizes({
@@ -122,19 +132,79 @@ export const Dashboard = () => {
         options: {
           method: "GET",
           headers: {
-            "Content-Type": "application/json"
-          }
-        }
+            "Content-Type": "application/json",
+          },
+        },
       });
     }
 
-    panelCreate.classList.toggle('show');
-  }
+    panelCreate.classList.toggle("show");
+  };
 
   const handleCreatePrenda = () => {
-    const panelCreate = document.querySelector('#panelCreate');
-    panelCreate.classList.toggle('show');
-  }
+    const panelCreate = document.querySelector("#panelCreate");
+    panelCreate.classList.toggle("show");
+  };
+
+  const handleSaveStock = async (id) => {
+    const cantidadValue = document.querySelector("#cantidad").value;
+    const talleValue = document.querySelector("#talle").value;
+    const colorValue = document.querySelector("#color").value;
+
+    await refetchCreateStock({
+      url: "http://localhost:3000/api/stocks/",
+      options: {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          prenda_id: id,
+          cantidad: cantidadValue,
+          talle_id: talleValue,
+          color_id: colorValue,
+          disponible: true,
+        }),
+      },
+    });
+  };
+
+  const handleViewStocks = async (id) => {
+    if (!stocksView.includes(id)) {
+      if (!stocks.length) {
+        await refetchDataStocks({
+          url: `http://localhost:3000/api/stocks/product/${id}`,
+          options: {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        });
+      }
+  
+      setStocksView((prev) => [...prev, id]);
+    } else {
+      setStocksView((prev) => prev.filter(pre => pre !== id));
+    }
+  };
+
+  useEffect(() => {
+    if (responseDataStocks.data) {
+      if (responseDataStocks.data.length) {
+        console.log("Guardando: ", responseDataStocks.data);
+        setStocks((prev) => [...prev, responseDataStocks.data[0]]);
+      }
+    }
+  }, [responseDataStocks.data]);
+
+  useEffect(() => {
+    if (responseCreateStock.data) {
+      console.log("Stock creado: ", responseCreateStock.data);
+      setStocks((prev) => [...prev, responseCreateStock.data[0]]);
+    }
+  }, [responseCreateStock.data]);
 
   if (loadingClothes) return <h1>Cargando...</h1>;
 
@@ -145,11 +215,17 @@ export const Dashboard = () => {
       <h1>Dashboard</h1>
       <header className="dashboard-header">
         <h2>Prendas</h2>
-        <button onClick={() => handleOpenEdit("Create")}><CiCirclePlus /></button>
+        <button onClick={() => handleOpenEdit("Create")}>
+          <CiCirclePlus />
+        </button>
       </header>
       {clothes &&
         clothes.map((clothe, index) => (
-          <div key={index} className="dashboard-clothe">
+          <div
+            key={index}
+            className="dashboard-clothe"
+            onClick={() => handleViewStocks(clothe.id)}
+          >
             <header>
               <div className="dashboard-clothe-info">
                 <img
@@ -159,9 +235,15 @@ export const Dashboard = () => {
                 <h3>{clothe.nombre}</h3>
               </div>
               <div className="dashboard-clothe-buttons">
-                <button id="edit" onClick={() => handleOpenEdit("Edit")}><CiEdit /></button>
-                <button onClick={() => handleDelete(clothe.id)}><CiTrash /></button>
-                <button onClick={() => handleCreate(clothe.id)}><CiCirclePlus /></button>
+                <button id="edit" onClick={() => handleOpenEdit("Edit")}>
+                  <CiEdit />
+                </button>
+                <button onClick={() => handleDelete(clothe.id)}>
+                  <CiTrash />
+                </button>
+                <button onClick={() => handleCreate(clothe.id)}>
+                  <CiCirclePlus />
+                </button>
               </div>
             </header>
             <main>
@@ -172,7 +254,9 @@ export const Dashboard = () => {
               </dialog>
               <dialog id="modalCreate">
                 <h4>Crear Prenda</h4>
-                <button onClick={() => handleCloseEdit("Create")}>Cerrar</button>
+                <button onClick={() => handleCloseEdit("Create")}>
+                  Cerrar
+                </button>
                 <button>Guardar</button>
               </dialog>
               <header className="panelCreate" id={`panelCreate-${clothe.id}`}>
@@ -184,24 +268,43 @@ export const Dashboard = () => {
                 <div>
                   <label htmlFor="color">Color:</label>
                   <select name="color" id="color">
-                    <option disabled defaultValue="">--Seleccione un color--</option>
                     {colors.map((color, index) => (
-                      <option key={index} value={color.nombre}>{color.nombre}</option>
+                      <option key={index} value={color.id}>
+                        {color.nombre}
+                      </option>
                     ))}
                   </select>
                 </div>
                 <div>
                   <label htmlFor="talle">Talle:</label>
                   <select name="talle" id="talle">
-                    <option defaultValue="" disabled>--Seleccione un talle--</option>
                     {sizes.map((size, index) => (
-                      <option key={index} value={size.nombre}>{size.nombre}</option>
+                      <option key={index} value={size.id}>
+                        {size.nombre}
+                      </option>
                     ))}
                   </select>
                 </div>
-                <button onClick={handleCreate}>Cerrar</button>
+                <button onClick={() => handleCreate(clothe.id)}>Cerrar</button>
+                <button onClick={() => handleSaveStock(clothe.id)}>
+                  Guardar
+                </button>
               </header>
             </main>
+            {stocksView.includes(clothe.id) ? (
+              <div>
+                <h5>Stocks</h5>
+                <ul>
+                  {stocks.map((stock) => (
+                    <li key={`${stock.Color.nombre}${stock.Talle.nombre}${stock.Prenda.nombre}`}>
+                      <p>Cantidad: {stock.cantidad}</p>
+                      <p>Color: {stock.Color.nombre}</p>
+                      <p>Talle: {stock.Talle.nombre}</p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ): null}
           </div>
         ))}
     </main>
