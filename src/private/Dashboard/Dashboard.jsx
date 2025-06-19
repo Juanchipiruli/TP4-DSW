@@ -14,6 +14,7 @@ export const Dashboard = () => {
   const [stocksView, setStocksView] = useState([]);
   const [colors, setColors] = useState([]);
   const [sizes, setSizes] = useState([]);
+  const [marcas, setMarcas] = useState([]);
 
   const { token } = useAuth();
 
@@ -26,6 +27,22 @@ export const Dashboard = () => {
       },
     },
   });
+
+  const responseMarcas = useFetch({
+    url: "http://localhost:3000/api/marcas/",
+    options: {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  });
+
+  useEffect(() => {
+    if (responseMarcas.data) {
+      setMarcas(responseMarcas.data);
+    }
+  }, [responseMarcas.data]);
 
   const dataClothes = responseDataClothes.data;
   const loadingClothes = responseDataClothes.loading;
@@ -68,6 +85,17 @@ export const Dashboard = () => {
 
   const refetchDataStocks = responseDataStocks.refetch;
 
+  const responseCreatePrenda = useFetch({autoFetch: false});
+
+  const refetchCreatePrenda = responseCreatePrenda.refetch;
+
+  const responseUpdatePrenda = useFetch({autoFetch: false});
+  const refetchUpdatePrenda = responseUpdatePrenda.refetch;
+
+  const dataCreatePrenda = responseCreatePrenda.data;
+
+  
+
   useEffect(() => {
     setClothes(dataClothes);
   }, [dataClothes]);
@@ -86,14 +114,24 @@ export const Dashboard = () => {
     }
   }, [dataSizes]);
 
-  const handleOpenEdit = (id) => {
-    const modal = document.querySelector(`#modal${id}`);
-    modal.showModal();
+  const handleOpenEdit = (id, prendaId= null) => {
+    if (prendaId) {
+      const modal = document.querySelector(`#modal${id}-${prendaId}`);
+      modal.showModal();
+    } else {
+      const modal = document.querySelector(`#modal${id}`);
+      modal.showModal();
+    }
   };
 
-  const handleCloseEdit = (id) => {
-    const modal = document.querySelector(`#modal${id}`);
-    modal.close();
+  const handleCloseEdit = (id, prendaId= null) => {
+    if (prendaId) {
+      const modal = document.querySelector(`#modal${id}-${prendaId}`);
+      modal.close();
+    } else {
+      const modal = document.querySelector(`#modal${id}`);
+      modal.close();
+    }
   };
 
   const handleDelete = async (id) => {
@@ -116,35 +154,72 @@ export const Dashboard = () => {
   const handleCreate = async (id) => {
     const panelCreate = document.querySelector(`#panelCreate-${id}`);
 
-    if (panelCreate !== "show") {
-      await refetchColors({
-        url: "http://localhost:3000/api/colores/",
-        options: {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      });
+      
 
-      await refetchSizes({
-        url: "http://localhost:3000/api/talles/",
-        options: {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        },
-      });
+    panelCreate.classList.toggle("show");
+  };
+
+  const handleCreatePrenda = async() => {
+    const nombreValue = document.querySelector("#modalCreate #nombre").value.trim();
+    const marcaValue = document.querySelector("#modalCreate #marca").value;
+    const descripcionValue = document.querySelector("#modalCreate #descripcion").value.trim();
+    const precioValue = parseFloat(document.querySelector("#modalCreate #precio").value);
+    const imagenesValue = document.querySelector("#modalCreate #imagenes").value.trim();
+
+    // Validar campos obligatorios
+    if (!nombreValue || !marcaValue || isNaN(precioValue) || precioValue <= 0) {
+      alert("Los campos nombre, marca y precio son obligatorios. El precio debe ser mayor a 0");
+      return;
     }
 
-    panelCreate.classList.toggle("show");
+    await refetchCreatePrenda({
+      url: "http://localhost:3000/api/prendas/",
+      options: {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          nombre: nombreValue,
+          marca_id: marcaValue,
+          precio: precioValue,
+          ...(descripcionValue && { descripcion: descripcionValue }),
+          ...(imagenesValue && { imagenes: imagenesValue })
+        }),
+      },
+    });
   };
 
-  const handleCreatePrenda = () => {
-    const panelCreate = document.querySelector("#panelCreate");
-    panelCreate.classList.toggle("show");
-  };
+  const handleUpdatePrenda = async(id) => {
+    const nombreValue = document.querySelector(`#modalEdit-${id} #nombre`).value.trim();
+    const descripcionValue= document.querySelector(`#modalEdit-${id} #descripcion`).value;
+    const marcaValue = document.querySelector(`#modalEdit-${id} #marca`).value;
+    const precioValue = parseFloat(document.querySelector(`#modalEdit-${id} #precio`).value);
+    const imagenesValue = document.querySelector(`#modalEdit-${id} #imagenes`).value.trim();
+
+    console.log("ID: ", id);
+
+    const body = {
+      ...(nombreValue && { nombre: nombreValue }),
+      ...(descripcionValue && { descripcion: descripcionValue }),
+      ...(marcaValue && { marca_id: marcaValue }),
+      ...(precioValue && { precio: precioValue }),
+      ...(imagenesValue && { imagenes: imagenesValue })
+    };
+
+    await refetchUpdatePrenda ({
+      url: `http://localhost:3000/api/prendas/${id}`,
+      options: {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      },
+    });
+  }
 
   const handleSaveStock = async (id) => {
     const cantidadValue = document.querySelector("#cantidad").value;
@@ -219,11 +294,33 @@ export const Dashboard = () => {
         <button className="dashboard-clothe-button" onClick={() => handleOpenEdit("Create")}>
           <CiCirclePlus />
         </button>
+        <dialog id="modalCreate">
+                <h4>Crear Prenda</h4>
+                <div>
+                  <form>
+                    <input type="text" id="nombre" name="nombre" placeholder="Nombre" />
+                    <input type="text" id="descripcion" name="descripcion" placeholder="Descripcion" />
+                    <select id="marca">
+                      {marcas.map((marca) => (
+                        <option key={`${marca.id} + ${marca.nombre}`} value={marca.id}>
+                          {marca.nombre}
+                        </option>
+                      ))}
+                    </select>
+                    <input type="number" id="precio" name="precio" placeholder="Precio" />
+                    <input type="text" id="imagenes" name="imagenes" placeholder="URL de la imagen" />
+                  </form>
+                </div>
+                <button className="dashboard-clothe-button" onClick={() => handleCloseEdit("Create")}>
+                  Cerrar
+                </button>
+                <button className="dashboard-clothe-button" onClick={() => handleCreatePrenda()}>Guardar</button>
+              </dialog>
       </header>
       {clothes &&
-        clothes.map((clothe, index) => (
+        clothes.map((clothe) => (
           <div
-            key={index}
+            key={`${clothe.id} ${clothe.nombre}`}
             className="dashboard-clothe"
           >
             <header>
@@ -235,7 +332,7 @@ export const Dashboard = () => {
                 <h3>{clothe.nombre}</h3>
               </div>
               <div className="dashboard-clothe-buttons">
-                <button className="dashboard-clothe-button" id="edit" onClick={() => handleOpenEdit("Edit")}>
+                <button className="dashboard-clothe-button" id="edit" onClick={() => handleOpenEdit("Edit", clothe.id)}>
                   <CiEdit />
                 </button>
                 <button className="dashboard-clothe-button" onClick={() => handleDelete(clothe.id)}>
@@ -247,18 +344,27 @@ export const Dashboard = () => {
               </div>
             </header>
             <main>
-              <dialog id="modalEdit">
+              <dialog id={`modalEdit-${clothe.id}`}>
                 <h4>Editar Prenda</h4>
-                <button className="dashboard-clothe-button" onClick={() => handleCloseEdit("Edit")}>Cerrar</button>
-                <button className="dashboard-clothe-button">Guardar</button>
+                <div>
+                  <form>
+                    <input type="text" id="nombre" name="nombre" placeholder="Nombre" />
+                    <input type="text" id="descripcion" name="descripcion" placeholder="Descripcion" />
+                    <select id="marca">
+                      {marcas.map((marca) => (
+                        <option key={`${marca.id} + ${marca.nombre}`} value={marca.id}>
+                          {marca.nombre}
+                        </option>
+                      ))}
+                    </select>
+                    <input type="number" id="precio" name="precio" placeholder="Precio" />
+                    <input type="text" id="imagenes" name="imagenes" placeholder="URL de la imagen" />
+                  </form>
+                </div>
+                <button className="dashboard-clothe-button" onClick={() => handleCloseEdit("Edit", clothe.id)}>Cerrar</button>
+                <button className="dashboard-clothe-button" onClick={() => handleUpdatePrenda(clothe.id)}>Guardar</button>
               </dialog>
-              <dialog id="modalCreate">
-                <h4>Crear Prenda</h4>
-                <button className="dashboard-clothe-button" onClick={() => handleCloseEdit("Create")}>
-                  Cerrar
-                </button>
-                <button className="dashboard-clothe-button">Guardar</button>
-              </dialog>
+              
               <header className="panelCreate" id={`panelCreate-${clothe.id}`}>
                 <h4>Crear Stocks</h4>
                 <div>
