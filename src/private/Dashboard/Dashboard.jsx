@@ -171,6 +171,7 @@ export const Dashboard = () => {
   };
 
   const handleViewStocks = async (id) => {
+    console.log("ABRIR O CERRAR");
     if (!stocksView.includes(id)) {
       if (!stocks.length) {
         await refetchDataStocks({
