@@ -4,6 +4,7 @@ import { AppRoutes } from '../../models/routes.models';
 import { inputs } from '../../constants/inputs';
 import { useFetch } from '../../hooks/useFetch';
 import { useEffect } from 'react';
+import './SignUp.css'
 
 export const SignUp = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ export const SignUp = () => {
   }, [data])
 
   return (
-    <main>
+    <main className='Register-Main'>
       <h1>Registrarse</h1>
       <Form 
         fields={inputs}
@@ -42,7 +43,7 @@ export const SignUp = () => {
       {error && (
         <Error text={error}/>
       )}
-      <footer>
+      <footer className='Register-Footer'>
         <Link to={AppRoutes.login}>Ya estas registrado?</Link>
       </footer>
     </main>

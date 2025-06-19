@@ -11,12 +11,19 @@ fieldset{
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
-    height: 250px;
     height: clamp(100px, 80%, 250px);
     width: 50%;
+    min-width: 400px;
     margin: auto;
     background: none;
 
+}
+.form-register{
+    margin-top: 50px;
+    height: 450px;
+}
+.form-login{
+    height: 250px;
 }
 .fieldmaicogay{
     width: 70%;

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import './Form.css';
 
@@ -18,8 +17,8 @@ export const Form = ({ fields, onSubmit, submitText = 'Enviar' }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <fieldset>
+    <form onSubmit={handleSubmit} >
+      <fieldset className={submitText === "Registrarse" ? "form-register" : "form-login"}>
         {fields.map(field => (
           <div key={field.name} className='fieldmaicogay'>
             <label htmlFor={field.name}>{field.label}:</label>
