@@ -215,7 +215,7 @@ export const Dashboard = () => {
       <h1>Dashboard</h1>
       <header className="dashboard-header">
         <h2>Prendas</h2>
-        <button onClick={() => handleOpenEdit("Create")}>
+        <button className="dashboard-clothe-button" onClick={() => handleOpenEdit("Create")}>
           <CiCirclePlus />
         </button>
       </header>
@@ -235,13 +235,13 @@ export const Dashboard = () => {
                 <h3>{clothe.nombre}</h3>
               </div>
               <div className="dashboard-clothe-buttons">
-                <button id="edit" onClick={() => handleOpenEdit("Edit")}>
+                <button className="dashboard-clothe-button" id="edit" onClick={() => handleOpenEdit("Edit")}>
                   <CiEdit />
                 </button>
-                <button onClick={() => handleDelete(clothe.id)}>
+                <button className="dashboard-clothe-button" onClick={() => handleDelete(clothe.id)}>
                   <CiTrash />
                 </button>
-                <button onClick={() => handleCreate(clothe.id)}>
+                <button className="dashboard-clothe-button" onClick={() => handleCreate(clothe.id)}>
                   <CiCirclePlus />
                 </button>
               </div>
@@ -249,15 +249,15 @@ export const Dashboard = () => {
             <main>
               <dialog id="modalEdit">
                 <h4>Editar Prenda</h4>
-                <button onClick={() => handleCloseEdit("Edit")}>Cerrar</button>
-                <button>Guardar</button>
+                <button className="dashboard-clothe-button" onClick={() => handleCloseEdit("Edit")}>Cerrar</button>
+                <button className="dashboard-clothe-button">Guardar</button>
               </dialog>
               <dialog id="modalCreate">
                 <h4>Crear Prenda</h4>
-                <button onClick={() => handleCloseEdit("Create")}>
+                <button className="dashboard-clothe-button" onClick={() => handleCloseEdit("Create")}>
                   Cerrar
                 </button>
-                <button>Guardar</button>
+                <button className="dashboard-clothe-button">Guardar</button>
               </dialog>
               <header className="panelCreate" id={`panelCreate-${clothe.id}`}>
                 <h4>Crear Stocks</h4>
@@ -285,8 +285,8 @@ export const Dashboard = () => {
                     ))}
                   </select>
                 </div>
-                <button onClick={() => handleCreate(clothe.id)}>Cerrar</button>
-                <button onClick={() => handleSaveStock(clothe.id)}>
+                <button className="dashboard-clothe-button" onClick={() => handleCreate(clothe.id)}>Cerrar</button>
+                <button className="dashboard-clothe-button" onClick={() => handleSaveStock(clothe.id)}>
                   Guardar
                 </button>
               </header>
