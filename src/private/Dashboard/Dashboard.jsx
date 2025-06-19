@@ -225,10 +225,9 @@ export const Dashboard = () => {
           <div
             key={index}
             className="dashboard-clothe"
-            onClick={() => handleViewStocks(clothe.id)}
           >
             <header>
-              <div className="dashboard-clothe-info">
+              <div className="dashboard-clothe-info" onClick={() => handleViewStocks(clothe.id)}>
                 <img
                   src={clothe.imagenes}
                   alt={`Imagen de la prenda ${clothe.nombre}`}
