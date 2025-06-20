@@ -1,9 +1,10 @@
 import React from "react";
 import "./UserSidebar.css";
 import { useAuth } from "../../context/AuthContext";
+import { Link } from "react-router-dom";
 
 export const UserSidebar = ({ open, onClose, onProductos, onLogout }) => {
-    const { logout } = useAuth();
+    const { logout, isAdmin } = useAuth();
     const handleLogout = () => {
         logout();
         onClose();
@@ -15,11 +16,17 @@ export const UserSidebar = ({ open, onClose, onProductos, onLogout }) => {
       </header>
       <div className="sidebar-content">
         <button className="sidebar-btn" onClick={onProductos}>Productos</button>
+        {isAdmin && (
+          <Link to="/dashboard" className="sidebar-btn">
+            Dashboard
+          </Link>
+        )}
         <div className="sidebar-btn-spacer" />
-        <div className="logout-btn-container">
+        
+      </div>
+      <div className="logout-btn-container">
           <button className="sidebar-btn" onClick={() => handleLogout()}>Cerrar sesión</button>
         </div>
-      </div>
     </div>
   );
 };
