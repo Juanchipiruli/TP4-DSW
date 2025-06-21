@@ -7,6 +7,8 @@ import "./Dashboard.css";
 import { CiEdit } from "react-icons/ci";
 import { CiTrash } from "react-icons/ci";
 import { CiCirclePlus } from "react-icons/ci";
+import { IoReturnUpBack } from "react-icons/io5";
+import { CiCircleCheck } from "react-icons/ci";
 
 export const Dashboard = () => {
   const [clothes, setClothes] = useState([]);
@@ -438,7 +440,14 @@ export const Dashboard = () => {
 
   return (
     <main>
+      <div className="dashboard-title-container">
+      <Link to="/">
+        <button className="dashboard-clothe-button">
+        <IoReturnUpBack />
+        </button>
+      </Link>
       <h1>Dashboard</h1>
+      </div>
       <header className="dashboard-header">
         <h2>Prendas</h2>
         <button
@@ -449,7 +458,7 @@ export const Dashboard = () => {
         </button>
         <dialog id="modalCreate">
           <h4>Crear Prenda</h4>
-          <div>
+          <div className="modalCreate-form">
             <form>
               <input
                 type="text"
@@ -487,18 +496,18 @@ export const Dashboard = () => {
               />
             </form>
           </div>
+          <div className="buttons-container">
           <button
-            className="dashboard-clothe-button"
             onClick={() => handleCloseEdit("Create")}
           >
             Cerrar
           </button>
           <button
-            className="dashboard-clothe-button"
             onClick={() => handleCreatePrenda()}
           >
             Guardar
           </button>
+          </div>
         </dialog>
       </header>
       {clothes &&
@@ -542,8 +551,9 @@ export const Dashboard = () => {
             </header>
             <main>
               <dialog id={`modalEdit-${clothe.id}`}>
+                <div className="modalEdit">
                 <h4>Editar Prenda</h4>
-                <div>
+                <div className="modalEdit-form">
                   <form>
                     <input
                       type="text"
@@ -581,18 +591,19 @@ export const Dashboard = () => {
                     />
                   </form>
                 </div>
+                <div className="buttons-container">
                 <button
-                  className="dashboard-clothe-button"
                   onClick={() => handleCloseEdit("Edit", clothe.id)}
                 >
                   Cerrar
                 </button>
                 <button
-                  className="dashboard-clothe-button"
                   onClick={() => handleUpdatePrenda(clothe.id)}
                 >
                   Guardar
                 </button>
+                </div>
+                </div>
               </dialog>
 
               <header className="panelCreate" id={`panelCreate-${clothe.id}`}>
@@ -636,19 +647,28 @@ export const Dashboard = () => {
               </header>
             </main>
             {stocksView.includes(clothe.id) ? (
-              <div>
-                <h5>Stocks</h5>
-                <ul>
+              <div className="dashboard-stocks-container">
+                <h5 className="dashboard-stocks-title">Stocks</h5>
+                <ul className="dashboard-stocks-list">
                   {stocks.map((stock) => (
                     <li
                       key={`${stock.Color.nombre}${stock.Talle.nombre}${stock.Prenda.nombre}`}
+                      className="dashboard-stock-item"
                     >
+                      <div className="dashboard-stock-item-info">
+                      <img
+                        src={stock.Prenda.imagenes}
+                        alt={`Imagen de la prenda ${stock.Prenda.nombre}`}
+                      />
                       <p>Cantidad: {stock.cantidad}</p>
                       <p>Color: {stock.Color.nombre}</p>
                       <p>Talle: {stock.Talle.nombre}</p>
-                      <button onClick={() => handleOpenEditStock(stock.id)}>
-                        Editar
+                      </div>
+                      <div className="dashboard-stock-item-buttons">
+                      <button className="dashboard-clothe-button" onClick={() => handleOpenEditStock(stock.id)}>
+                        <CiEdit />
                       </button>
+
                       <div
                         className="modalEditStock"
                         id={`modalEditStock-${stock.id}`}
@@ -658,10 +678,12 @@ export const Dashboard = () => {
                           id={`edit${stock.id}`}
                           placeholder="cantidad"
                         />
-                        <button onClick={() => handleEditStock(stock.id)}>
-                          Guardar
+                        <button className="dashboard-clothe-button" onClick={() => handleEditStock(stock.id)}>
+                          <CiCircleCheck />
                         </button>
                       </div>
+                      </div>
+                      
                     </li>
                   ))}
                 </ul>
@@ -670,31 +692,36 @@ export const Dashboard = () => {
           </div>
         ))}
       <div className="dashboard-colors-y-sizes">
-        <div>
+        <div className="dashboard-colors-container">
+          <h2>Colores</h2>
+          <div className="dashboard-colors-container">
           {colors &&
             colors.map((color) => (
               <article key={color.codigo_hex}>
-                <div
+                <div className="color-hex"
                   style={{
                     backgroundColor: `#${color.codigo_hex}`,
-                    width: "50px",
-                    height: "50px",
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "7px",
                   }}
                 ></div>
                 <p>{color.nombre}</p>
                 <button className="dashboard-clothe-button" onClick={() => handleDeleteColor(color.id)}><CiTrash /></button>
               </article>
             ))}
+          </div>
             <button className="dashboard-clothe-button" onClick={handleOpenCreateColor}><CiCirclePlus /></button>
           <div id="modalCreateColor">
             <label htmlFor="colorPicker">Elige un color:</label>
             <input type="color" id="colorPicker" name="color" defaultValue="#ff0000"/>
             <label htmlFor="nombreColor">Nombre:</label>
             <input type="text" id="nombreColor" name="color"/>
-            <button className="dashboard-clothe-button" onClick={handleSaveColor}>Guardar</button>
+            <button className="dashboard-clothe-button" onClick={handleSaveColor}><CiCircleCheck /></button>
           </div>
         </div>
-        <div>
+        <div className="dashboard-colors-container">
+          <h2>Talles</h2>
         {sizes &&
           sizes.map((size) => (
             <article key={size.nombre}>
@@ -706,7 +733,7 @@ export const Dashboard = () => {
           <div id="modalCreateSize">
             <label htmlFor="nombreTalle">Nombre:</label>
             <input type="text" id="nombreTalle" name="talle" />
-            <button className="dashboard-clothe-button" onClick={handleSaveSize}>Guardar</button>
+            <button className="dashboard-clothe-button" onClick={handleSaveSize}><CiCircleCheck /></button>
           </div>
         </div>
       </div>
