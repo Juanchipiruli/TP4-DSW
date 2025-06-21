@@ -3,8 +3,75 @@
 }
 
 .panelCreate.show {
-  display: block !important;
+  display: flex !important;
 }
+
+.panelCreate-container{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-around;
+}
+
+.panelCreate-container h4{
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: whitesmoke;
+  margin: 0px 0px 0px 10px;
+  padding: 0;
+}
+
+.panelCreate-form{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-around;
+}
+
+.panelCreate-form label{
+  color: whitesmoke;
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 0px 0px 0px 10px;
+  padding: 0;
+}
+.panelCreate-form input{
+  color: black;
+  background-color:#cdcdcd;
+  height: 30px;
+  border: none;
+  font-size: large;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  transition: all 0.4s;
+}
+.panelCreate-form input:focus{
+  outline: none;
+}
+
+.panelCreate-form input:hover{
+  box-shadow: 0px 3.5px 0px 0px var(--secondary-color);
+}
+
+.panelCreate-form select{
+  width: 100px;
+  color: black;
+  background-color:#cdcdcd;
+  height: 30px;
+  border: none;
+  font-size: large;
+  transition: all 0.4s;
+}
+
+.panelCreate-form select:hover{
+  box-shadow: 0px 3.5px 0px 0px var(--secondary-color);
+}
+
+.panelCreate-form select:focus{
+  outline: none;
+}
+
 
 .modalEditStock {
   display: none;

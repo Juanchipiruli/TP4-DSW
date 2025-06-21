@@ -648,12 +648,14 @@ export const Dashboard = () => {
               </dialog>
 
               <header className="panelCreate" id={`panelCreate-${clothe.id}`}>
+                
+                <div className="panelCreate-container">
                 <h4>Crear Stocks</h4>
-                <div>
+                <div className="panelCreate-form">
                   <label htmlFor="cantidad">Cantidad:</label>
                   <input type="number" id={`cantidad${clothe.id}`} name="cantidad" min={1} />
                 </div>
-                <div>
+                <div className="panelCreate-form">
                   <label htmlFor="color">Color:</label>
                   <select name="color" id={`color${clothe.id}`}>
                     {colors.map((color, index) => (
@@ -663,7 +665,7 @@ export const Dashboard = () => {
                     ))}
                   </select>
                 </div>
-                <div>
+                <div className="panelCreate-form">
                   <label htmlFor="talle">Talle:</label>
                   <select name="talle" id={`talle${clothe.id}`}>
                     {sizes.map((size, index) => (
@@ -673,6 +675,8 @@ export const Dashboard = () => {
                     ))}
                   </select>
                 </div>
+                </div>
+                <div className="buttons-container">
                 <button
                   className="dashboard-clothe-button"
                   onClick={() => handleCreate(clothe.id)}
@@ -685,6 +689,7 @@ export const Dashboard = () => {
                 >
                   <CiCircleCheck />
                 </button>
+                </div>
               </header>
             </main>
             {stocks[clothe.id] && stocksView.includes(clothe.id) ? (
