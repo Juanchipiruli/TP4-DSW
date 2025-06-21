@@ -7,6 +7,8 @@ import "./Dashboard.css";
 import { CiEdit } from "react-icons/ci";
 import { CiTrash } from "react-icons/ci";
 import { CiCirclePlus } from "react-icons/ci";
+import { IoReturnUpBack } from "react-icons/io5";
+import { CiCircleCheck } from "react-icons/ci";
 
 export const Dashboard = () => {
   const [clothes, setClothes] = useState([]);
@@ -15,6 +17,7 @@ export const Dashboard = () => {
   const [colors, setColors] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [marcas, setMarcas] = useState([]);
+  const [tipos, setTipos] = useState([]);
 
   const { token } = useAuth();
 
@@ -38,11 +41,30 @@ export const Dashboard = () => {
     },
   });
 
+  const responseTipos = useFetch({
+    url: "http://localhost:3000/api/prendas/tipos/",
+    options: {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  });
+
+
+
+
   useEffect(() => {
     if (responseMarcas.data) {
       setMarcas(responseMarcas.data);
     }
   }, [responseMarcas.data]);
+
+  useEffect(() => {
+    if (responseTipos.data) {
+      setTipos(responseTipos.data);
+    }
+  }, [responseTipos.data]);
 
   const dataClothes = responseDataClothes.data;
   const loadingClothes = responseDataClothes.loading;
@@ -159,9 +181,7 @@ export const Dashboard = () => {
       .querySelector("#modalCreate #nombre")
       .value.trim();
     const marcaValue = document.querySelector("#modalCreate #marca").value;
-    const descripcionValue = document
-      .querySelector("#modalCreate #descripcion")
-      .value.trim();
+    const tipoValue = document.querySelector("#modalCreate #tipo").value;
     const precioValue = parseFloat(
       document.querySelector("#modalCreate #precio").value
     );
@@ -189,7 +209,7 @@ export const Dashboard = () => {
           nombre: nombreValue,
           marca_id: marcaValue,
           precio: precioValue,
-          ...(descripcionValue && { descripcion: descripcionValue }),
+          ...(tipoValue && { tipo_id: tipoValue }),
           ...(imagenesValue && { imagenes: imagenesValue }),
         }),
       },
@@ -200,9 +220,7 @@ export const Dashboard = () => {
     const nombreValue = document
       .querySelector(`#modalEdit-${id} #nombre`)
       .value.trim();
-    const descripcionValue = document.querySelector(
-      `#modalEdit-${id} #descripcion`
-    ).value;
+    const tipoValue = document.querySelector(`#modalEdit-${id} #tipo`).value;
     const marcaValue = document.querySelector(`#modalEdit-${id} #marca`).value;
     const precioValue = parseFloat(
       document.querySelector(`#modalEdit-${id} #precio`).value
@@ -215,7 +233,7 @@ export const Dashboard = () => {
 
     const body = {
       ...(nombreValue && { nombre: nombreValue }),
-      ...(descripcionValue && { descripcion: descripcionValue }),
+      ...(tipoValue && { tipo_id: tipoValue }),
       ...(marcaValue && { marca_id: marcaValue }),
       ...(precioValue && { precio: precioValue }),
       ...(imagenesValue && { imagenes: imagenesValue }),
@@ -455,7 +473,14 @@ export const Dashboard = () => {
 
   return (
     <main>
+      <div className="dashboard-title-container">
+      <Link to="/">
+        <button className="dashboard-clothe-button">
+        <IoReturnUpBack />
+        </button>
+      </Link>
       <h1>Dashboard</h1>
+      </div>
       <header className="dashboard-header">
         <h2>Prendas</h2>
         <button
@@ -466,7 +491,7 @@ export const Dashboard = () => {
         </button>
         <dialog id="modalCreate">
           <h4>Crear Prenda</h4>
-          <div>
+          <div className="modalCreate-form">
             <form>
               <input
                 type="text"
@@ -474,12 +499,16 @@ export const Dashboard = () => {
                 name="nombre"
                 placeholder="Nombre"
               />
-              <input
-                type="text"
-                id="descripcion"
-                name="descripcion"
-                placeholder="Descripcion"
-              />
+              <select id="tipo">
+                {tipos.map((tipo) => (
+                  <option
+                    key={`${tipo.id} + ${tipo.nombre}`}
+                    value={tipo.id}
+                  >
+                    {tipo.nombre}
+                  </option>
+                ))}
+              </select>
               <select id="marca">
                 {marcas.map((marca) => (
                   <option
@@ -504,18 +533,18 @@ export const Dashboard = () => {
               />
             </form>
           </div>
+          <div className="buttons-container">
           <button
-            className="dashboard-clothe-button"
             onClick={() => handleCloseEdit("Create")}
           >
             Cerrar
           </button>
           <button
-            className="dashboard-clothe-button"
             onClick={() => handleCreatePrenda()}
           >
             Guardar
           </button>
+          </div>
         </dialog>
       </header>
       {clothes &&
@@ -559,8 +588,9 @@ export const Dashboard = () => {
             </header>
             <main>
               <dialog id={`modalEdit-${clothe.id}`}>
+                <div className="modalEdit">
                 <h4>Editar Prenda</h4>
-                <div>
+                <div className="modalEdit-form">
                   <form>
                     <input
                       type="text"
@@ -568,12 +598,16 @@ export const Dashboard = () => {
                       name="nombre"
                       placeholder="Nombre"
                     />
-                    <input
-                      type="text"
-                      id="descripcion"
-                      name="descripcion"
-                      placeholder="Descripcion"
-                    />
+                    <select id="tipo">
+                      {tipos.map((tipo) => (
+                        <option
+                          key={`${tipo.id} + ${tipo.nombre}`}
+                          value={tipo.id}
+                        >
+                          {tipo.nombre}
+                        </option>
+                      ))}
+                    </select>
                     <select id="marca">
                       {marcas.map((marca) => (
                         <option
@@ -598,18 +632,19 @@ export const Dashboard = () => {
                     />
                   </form>
                 </div>
+                <div className="buttons-container">
                 <button
-                  className="dashboard-clothe-button"
                   onClick={() => handleCloseEdit("Edit", clothe.id)}
                 >
                   Cerrar
                 </button>
                 <button
-                  className="dashboard-clothe-button"
                   onClick={() => handleUpdatePrenda(clothe.id)}
                 >
                   Guardar
                 </button>
+                </div>
+                </div>
               </dialog>
 
               <header className="panelCreate" id={`panelCreate-${clothe.id}`}>
@@ -653,19 +688,28 @@ export const Dashboard = () => {
               </header>
             </main>
             {stocks[clothe.id] && stocksView.includes(clothe.id) ? (
-              <div>
-                <h5>Stocks</h5>
-                <ul>
+              <div className="dashboard-stocks-container">
+                <h5 className="dashboard-stocks-title">Stocks</h5>
+                <ul className="dashboard-stocks-list">
                   {stocks[clothe.id].map((stock) => (
                     <li
                       key={`${stock.Color.nombre}${stock.Talle.nombre}${stock.Prenda.nombre}`}
+                      className="dashboard-stock-item"
                     >
+                      <div className="dashboard-stock-item-info">
+                      <img
+                        src={stock.Prenda.imagenes}
+                        alt={`Imagen de la prenda ${stock.Prenda.nombre}`}
+                      />
                       <p>Cantidad: {stock.cantidad}</p>
                       <p>Color: {stock.Color.nombre}</p>
                       <p>Talle: {stock.Talle.nombre}</p>
-                      <button onClick={() => handleOpenEditStock(stock.id)}>
-                        Editar
+                      </div>
+                      <div className="dashboard-stock-item-buttons">
+                      <button className="dashboard-clothe-button" onClick={() => handleOpenEditStock(stock.id)}>
+                        <CiEdit />
                       </button>
+
                       <div
                         className="modalEditStock"
                         id={`modalEditStock-${stock.id}`}
@@ -675,10 +719,12 @@ export const Dashboard = () => {
                           id={`edit${stock.id}`}
                           placeholder="cantidad"
                         />
-                        <button onClick={() => handleEditStock(stock.id)}>
-                          Guardar
+                        <button className="dashboard-clothe-button" onClick={() => handleEditStock(stock.id)}>
+                          <CiCircleCheck />
                         </button>
                       </div>
+                      </div>
+                      
                     </li>
                   ))}
                 </ul>
@@ -687,7 +733,7 @@ export const Dashboard = () => {
           </div>
         ))}
       <div className="dashboard-colors-y-sizes">
-        <div>
+        <div className="dashboard-colors-container">
           <h2>Colores</h2>
           <button
             className="dashboard-clothe-button"
@@ -712,14 +758,16 @@ export const Dashboard = () => {
               Guardar
             </button>
           </div>
+          <div className="dashboard-colors-container">
           {colors &&
             colors.map((color) => (
               <article key={color.codigo_hex}>
-                <div
+                <div className="color-hex"
                   style={{
                     backgroundColor: `#${color.codigo_hex}`,
-                    width: "50px",
-                    height: "50px",
+                    width: "30px",
+                    height: "30px",
+                    borderRadius: "7px",
                   }}
                 ></div>
                 <p>{color.nombre}</p>
@@ -731,8 +779,17 @@ export const Dashboard = () => {
                 </button>
               </article>
             ))}
+            </div>
+            <button className="dashboard-clothe-button" onClick={handleOpenCreateColor}><CiCirclePlus /></button>
+          <div id="modalCreateColor">
+            <label htmlFor="colorPicker">Elige un color:</label>
+            <input type="color" id="colorPicker" name="color" defaultValue="#ff0000"/>
+            <label htmlFor="nombreColor">Nombre:</label>
+            <input type="text" id="nombreColor" name="color"/>
+            <button className="dashboard-clothe-button" onClick={handleSaveColor}>Guardar</button>
+          </div>
         </div>
-        <div>
+        <div className="dashboard-colors-container">
           <h2>Talles</h2>
           <button
             className="dashboard-clothe-button"
@@ -743,12 +800,7 @@ export const Dashboard = () => {
           <div id="modalCreateSize">
             <label htmlFor="nombreTalle">Nombre:</label>
             <input type="text" id="nombreTalle" name="talle" />
-            <button
-              className="dashboard-clothe-button"
-              onClick={handleSaveSize}
-            >
-              Guardar
-            </button>
+            <button className="dashboard-clothe-button" onClick={handleSaveSize}><CiCircleCheck /></button>
           </div>
           {sizes &&
             sizes.map((size) => (
