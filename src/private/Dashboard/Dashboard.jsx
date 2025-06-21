@@ -8,7 +8,7 @@ import { CiEdit } from "react-icons/ci";
 import { CiTrash } from "react-icons/ci";
 import { CiCirclePlus } from "react-icons/ci";
 import { IoReturnUpBack } from "react-icons/io5";
-import { CiCircleCheck } from "react-icons/ci";
+import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
 
 export const Dashboard = () => {
   const [clothes, setClothes] = useState([]);
@@ -542,7 +542,7 @@ export const Dashboard = () => {
           <button
             onClick={() => handleCreatePrenda()}
           >
-            Guardar
+            Guardar 
           </button>
           </div>
         </dialog>
@@ -677,13 +677,13 @@ export const Dashboard = () => {
                   className="dashboard-clothe-button"
                   onClick={() => handleCreate(clothe.id)}
                 >
-                  Cerrar
+                  <CiCircleRemove/>
                 </button>
                 <button
                   className="dashboard-clothe-button"
                   onClick={() => handleSaveStock(clothe.id)}
                 >
-                  Guardar
+                  <CiCircleCheck />
                 </button>
               </header>
             </main>
@@ -755,7 +755,7 @@ export const Dashboard = () => {
               className="dashboard-clothe-button"
               onClick={handleSaveColor}
             >
-              Guardar
+              <CiCircleCheck />
             </button>
           </div>
           <div className="dashboard-colors-container">
@@ -779,14 +779,6 @@ export const Dashboard = () => {
                 </button>
               </article>
             ))}
-            </div>
-            <button className="dashboard-clothe-button" onClick={handleOpenCreateColor}><CiCirclePlus /></button>
-          <div id="modalCreateColor">
-            <label htmlFor="colorPicker">Elige un color:</label>
-            <input type="color" id="colorPicker" name="color" defaultValue="#ff0000"/>
-            <label htmlFor="nombreColor">Nombre:</label>
-            <input type="text" id="nombreColor" name="color"/>
-            <button className="dashboard-clothe-button" onClick={handleSaveColor}>Guardar</button>
           </div>
         </div>
         <div className="dashboard-colors-container">
