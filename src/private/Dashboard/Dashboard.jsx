@@ -104,8 +104,6 @@ export const Dashboard = () => {
   const responseUpdatePrenda = useFetch({ autoFetch: false });
   const refetchUpdatePrenda = responseUpdatePrenda.refetch;
 
-  const dataCreatePrenda = responseCreatePrenda.data;
-
   useEffect(() => {
     setClothes(dataClothes);
   }, [dataClothes]);
@@ -237,9 +235,9 @@ export const Dashboard = () => {
   };
 
   const handleSaveStock = async (id) => {
-    const cantidadValue = document.querySelector("#cantidad").value;
-    const talleValue = document.querySelector("#talle").value;
-    const colorValue = document.querySelector("#color").value;
+    const cantidadValue = document.querySelector(`#cantidad${id}`).value;
+    const talleValue = document.querySelector(`#talle${id}`).value;
+    const colorValue = document.querySelector(`#color${id}`).value;
 
     await refetchCreateStock({
       url: "http://localhost:3000/api/stocks/",
@@ -262,7 +260,7 @@ export const Dashboard = () => {
 
   const handleViewStocks = async (id) => {
     if (!stocksView.includes(id)) {
-      if (!stocks.length) {
+      if (!stocks[id]) {
         await refetchDataStocks({
           url: `http://localhost:3000/api/stocks/product/${id}`,
           options: {
@@ -283,14 +281,24 @@ export const Dashboard = () => {
   useEffect(() => {
     if (responseDataStocks.data) {
       if (responseDataStocks.data.length) {
-        setStocks((prev) => [...prev, responseDataStocks.data[0]]);
+        setStocks((prevStocks) => ({
+          ...prevStocks,
+          [responseDataStocks.data[0].prenda_id]: responseDataStocks.data,
+        }));
       }
     }
   }, [responseDataStocks.data]);
 
   useEffect(() => {
     if (responseCreateStock.data) {
-      setStocks((prev) => [...prev, responseCreateStock.data[0]]);
+      handleCreate(responseCreateStock.data.stock.prenda_id);
+      setStocks((prevStocks) => ({
+        ...prevStocks,
+        [responseCreateStock.data.stock.prenda_id]: [
+          ...(prevStocks[responseCreateStock.data.stock.prenda_id] || []),
+          responseCreateStock.data.stock,
+        ],
+      }));
     }
   }, [responseCreateStock.data]);
 
@@ -316,10 +324,13 @@ export const Dashboard = () => {
       },
     });
 
-    const updateStock = stocks.map((stock) =>
+    const updateStock = stocks[id].map((stock) =>
       stock.id === id ? { ...stock, ...{ cantidad: editValue } } : stock
     );
-    setStocks(updateStock);
+    setStocks((prevStock) => ({
+      ...prevStock,
+      [id]: updateStock,
+    }));
 
     handleOpenEditStock(id);
   };
@@ -331,7 +342,7 @@ export const Dashboard = () => {
   const handleOpenCreateColor = () => {
     const modalCreateColor = document.querySelector("#modalCreateColor");
     modalCreateColor.classList.toggle("show");
-  }
+  };
 
   const handleSaveColor = async () => {
     const nombre = document.querySelector("#nombreColor").value;
@@ -347,16 +358,17 @@ export const Dashboard = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ nombre, codigo_hex: colorPickerValue })
-      }
+        body: JSON.stringify({ nombre, codigo_hex: colorPickerValue }),
+      },
     });
-  }
+  };
 
   useEffect(() => {
     if (responseCreateColor.data) {
       setColors((prev) => [...prev, responseCreateColor.data]);
+      handleOpenCreateColor();
     }
-  }, [responseCreateColor.data])
+  }, [responseCreateColor.data]);
 
   const responseDeleteColor = useFetch({ autoFetch: false });
   const refetchDeleteColor = responseDeleteColor.refetch;
@@ -369,16 +381,18 @@ export const Dashboard = () => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        }
+        },
       },
     });
-  }
+  };
 
   useEffect(() => {
     if (responseDeleteColor.data) {
-      setColors((prev) => prev.filter((color) => color.id !== responseDeleteColor.data.color.id));
+      setColors((prev) =>
+        prev.filter((color) => color.id !== responseDeleteColor.data.color.id)
+      );
     }
-  }, [responseDeleteColor.data])
+  }, [responseDeleteColor.data]);
 
   const responseCreateSize = useFetch({ autoFetch: false });
   const refetchCreateSize = responseCreateSize.refetch;
@@ -386,7 +400,7 @@ export const Dashboard = () => {
   const handleOpenCreateSize = () => {
     const modalCreateSize = document.querySelector("#modalCreateSize");
     modalCreateSize.classList.toggle("show");
-  }
+  };
 
   const handleSaveSize = async () => {
     const nombre = document.querySelector("#nombreTalle").value;
@@ -399,16 +413,17 @@ export const Dashboard = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ nombre })
-      }
+        body: JSON.stringify({ nombre }),
+      },
     });
-  }
+  };
 
   useEffect(() => {
     if (responseCreateSize.data) {
       setSizes((prev) => [...prev, responseCreateSize.data]);
+      handleOpenCreateSize();
     }
-  }, [responseCreateSize.data])
+  }, [responseCreateSize.data]);
 
   const responseDeleteSize = useFetch({ autoFetch: false });
   const refetchDeleteSize = responseDeleteSize.refetch;
@@ -421,16 +436,18 @@ export const Dashboard = () => {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
-        }
-      }
+        },
+      },
     });
-  }
+  };
 
   useEffect(() => {
     if (responseDeleteSize.data) {
-      setSizes((prev) => prev.filter((size) => size.id !== responseDeleteSize.data.talle.id));
+      setSizes((prev) =>
+        prev.filter((size) => size.id !== responseDeleteSize.data.talle.id)
+      );
     }
-  }, [responseDeleteSize.data])
+  }, [responseDeleteSize.data]);
 
   if (loadingClothes) return <h1>Cargando...</h1>;
 
@@ -599,11 +616,11 @@ export const Dashboard = () => {
                 <h4>Crear Stocks</h4>
                 <div>
                   <label htmlFor="cantidad">Cantidad:</label>
-                  <input type="number" id="cantidad" name="cantidad" min={1} />
+                  <input type="number" id={`cantidad${clothe.id}`} name="cantidad" min={1} />
                 </div>
                 <div>
                   <label htmlFor="color">Color:</label>
-                  <select name="color" id="color">
+                  <select name="color" id={`color${clothe.id}`}>
                     {colors.map((color, index) => (
                       <option key={index} value={color.id}>
                         {color.nombre}
@@ -613,7 +630,7 @@ export const Dashboard = () => {
                 </div>
                 <div>
                   <label htmlFor="talle">Talle:</label>
-                  <select name="talle" id="talle">
+                  <select name="talle" id={`talle${clothe.id}`}>
                     {sizes.map((size, index) => (
                       <option key={index} value={size.id}>
                         {size.nombre}
@@ -635,11 +652,11 @@ export const Dashboard = () => {
                 </button>
               </header>
             </main>
-            {stocksView.includes(clothe.id) ? (
+            {stocks[clothe.id] && stocksView.includes(clothe.id) ? (
               <div>
                 <h5>Stocks</h5>
                 <ul>
-                  {stocks.map((stock) => (
+                  {stocks[clothe.id].map((stock) => (
                     <li
                       key={`${stock.Color.nombre}${stock.Talle.nombre}${stock.Prenda.nombre}`}
                     >
@@ -671,6 +688,30 @@ export const Dashboard = () => {
         ))}
       <div className="dashboard-colors-y-sizes">
         <div>
+          <h2>Colores</h2>
+          <button
+            className="dashboard-clothe-button"
+            onClick={handleOpenCreateColor}
+          >
+            <CiCirclePlus />
+          </button>
+          <div id="modalCreateColor">
+            <label htmlFor="colorPicker">Elige un color:</label>
+            <input
+              type="color"
+              id="colorPicker"
+              name="color"
+              defaultValue="#ff0000"
+            />
+            <label htmlFor="nombreColor">Nombre:</label>
+            <input type="text" id="nombreColor" name="color" />
+            <button
+              className="dashboard-clothe-button"
+              onClick={handleSaveColor}
+            >
+              Guardar
+            </button>
+          </div>
           {colors &&
             colors.map((color) => (
               <article key={color.codigo_hex}>
@@ -682,32 +723,45 @@ export const Dashboard = () => {
                   }}
                 ></div>
                 <p>{color.nombre}</p>
-                <button className="dashboard-clothe-button" onClick={() => handleDeleteColor(color.id)}><CiTrash /></button>
+                <button
+                  className="dashboard-clothe-button"
+                  onClick={() => handleDeleteColor(color.id)}
+                >
+                  <CiTrash />
+                </button>
               </article>
             ))}
-            <button className="dashboard-clothe-button" onClick={handleOpenCreateColor}><CiCirclePlus /></button>
-          <div id="modalCreateColor">
-            <label htmlFor="colorPicker">Elige un color:</label>
-            <input type="color" id="colorPicker" name="color" defaultValue="#ff0000"/>
-            <label htmlFor="nombreColor">Nombre:</label>
-            <input type="text" id="nombreColor" name="color"/>
-            <button className="dashboard-clothe-button" onClick={handleSaveColor}>Guardar</button>
-          </div>
         </div>
         <div>
-        {sizes &&
-          sizes.map((size) => (
-            <article key={size.nombre}>
-              <p>{size.nombre}</p>
-              <button className="dashboard-clothe-button" onClick={() => handleDeleteSize(size.id)}><CiTrash /></button>
-            </article>
-          ))}
-          <button className="dashboard-clothe-button" onClick={handleOpenCreateSize}><CiCirclePlus /></button>
+          <h2>Talles</h2>
+          <button
+            className="dashboard-clothe-button"
+            onClick={handleOpenCreateSize}
+          >
+            <CiCirclePlus />
+          </button>
           <div id="modalCreateSize">
             <label htmlFor="nombreTalle">Nombre:</label>
             <input type="text" id="nombreTalle" name="talle" />
-            <button className="dashboard-clothe-button" onClick={handleSaveSize}>Guardar</button>
+            <button
+              className="dashboard-clothe-button"
+              onClick={handleSaveSize}
+            >
+              Guardar
+            </button>
           </div>
+          {sizes &&
+            sizes.map((size) => (
+              <article key={size.nombre}>
+                <p>{size.nombre}</p>
+                <button
+                  className="dashboard-clothe-button"
+                  onClick={() => handleDeleteSize(size.id)}
+                >
+                  <CiTrash />
+                </button>
+              </article>
+            ))}
         </div>
       </div>
     </main>
