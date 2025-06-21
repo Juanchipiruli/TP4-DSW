@@ -17,6 +17,7 @@ export const Dashboard = () => {
   const [colors, setColors] = useState([]);
   const [sizes, setSizes] = useState([]);
   const [marcas, setMarcas] = useState([]);
+  const [tipos, setTipos] = useState([]);
 
   const { token } = useAuth();
 
@@ -40,11 +41,30 @@ export const Dashboard = () => {
     },
   });
 
+  const responseTipos = useFetch({
+    url: "http://localhost:3000/api/prendas/tipos/",
+    options: {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  });
+
+
+
+
   useEffect(() => {
     if (responseMarcas.data) {
       setMarcas(responseMarcas.data);
     }
   }, [responseMarcas.data]);
+
+  useEffect(() => {
+    if (responseTipos.data) {
+      setTipos(responseTipos.data);
+    }
+  }, [responseTipos.data]);
 
   const dataClothes = responseDataClothes.data;
   const loadingClothes = responseDataClothes.loading;
@@ -163,9 +183,7 @@ export const Dashboard = () => {
       .querySelector("#modalCreate #nombre")
       .value.trim();
     const marcaValue = document.querySelector("#modalCreate #marca").value;
-    const descripcionValue = document
-      .querySelector("#modalCreate #descripcion")
-      .value.trim();
+    const tipoValue = document.querySelector("#modalCreate #tipo").value;
     const precioValue = parseFloat(
       document.querySelector("#modalCreate #precio").value
     );
@@ -193,7 +211,7 @@ export const Dashboard = () => {
           nombre: nombreValue,
           marca_id: marcaValue,
           precio: precioValue,
-          ...(descripcionValue && { descripcion: descripcionValue }),
+          ...(tipoValue && { tipo_id: tipoValue }),
           ...(imagenesValue && { imagenes: imagenesValue }),
         }),
       },
@@ -204,9 +222,7 @@ export const Dashboard = () => {
     const nombreValue = document
       .querySelector(`#modalEdit-${id} #nombre`)
       .value.trim();
-    const descripcionValue = document.querySelector(
-      `#modalEdit-${id} #descripcion`
-    ).value;
+    const tipoValue = document.querySelector(`#modalEdit-${id} #tipo`).value;
     const marcaValue = document.querySelector(`#modalEdit-${id} #marca`).value;
     const precioValue = parseFloat(
       document.querySelector(`#modalEdit-${id} #precio`).value
@@ -219,7 +235,7 @@ export const Dashboard = () => {
 
     const body = {
       ...(nombreValue && { nombre: nombreValue }),
-      ...(descripcionValue && { descripcion: descripcionValue }),
+      ...(tipoValue && { tipo_id: tipoValue }),
       ...(marcaValue && { marca_id: marcaValue }),
       ...(precioValue && { precio: precioValue }),
       ...(imagenesValue && { imagenes: imagenesValue }),
@@ -466,12 +482,16 @@ export const Dashboard = () => {
                 name="nombre"
                 placeholder="Nombre"
               />
-              <input
-                type="text"
-                id="descripcion"
-                name="descripcion"
-                placeholder="Descripcion"
-              />
+              <select id="tipo">
+                {tipos.map((tipo) => (
+                  <option
+                    key={`${tipo.id} + ${tipo.nombre}`}
+                    value={tipo.id}
+                  >
+                    {tipo.nombre}
+                  </option>
+                ))}
+              </select>
               <select id="marca">
                 {marcas.map((marca) => (
                   <option
@@ -561,12 +581,16 @@ export const Dashboard = () => {
                       name="nombre"
                       placeholder="Nombre"
                     />
-                    <input
-                      type="text"
-                      id="descripcion"
-                      name="descripcion"
-                      placeholder="Descripcion"
-                    />
+                    <select id="tipo">
+                      {tipos.map((tipo) => (
+                        <option
+                          key={`${tipo.id} + ${tipo.nombre}`}
+                          value={tipo.id}
+                        >
+                          {tipo.nombre}
+                        </option>
+                      ))}
+                    </select>
                     <select id="marca">
                       {marcas.map((marca) => (
                         <option
