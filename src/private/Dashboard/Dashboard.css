@@ -14,6 +14,22 @@
   display: block;
 }
 
+#modalCreateColor {
+  display: none;
+}
+
+#modalCreateColor.show {
+  display: block;
+}
+
+#modalCreateSize {
+  display: none;
+}
+
+#modalCreateSize.show {
+  display: block;
+}
+
 .dashboard-header{
   display: flex;
   flex-direction: column;
@@ -83,4 +99,9 @@
 
 .dashboard-clothe-button:hover{
   background-color: var(--dark-background);
+}
+
+.dashboard-colors-y-sizes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 }
