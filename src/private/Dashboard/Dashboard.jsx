@@ -31,15 +31,7 @@ export const Dashboard = () => {
     },
   });
 
-  const responseMarcas = useFetch({
-    url: "http://localhost:3000/api/marcas/",
-    options: {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  });
+
 
   const responseTipos = useFetch({
     url: "http://localhost:3000/api/prendas/types/",
@@ -50,15 +42,6 @@ export const Dashboard = () => {
       },
     },
   });
-
-
-
-
-  useEffect(() => {
-    if (responseMarcas.data) {
-      setMarcas(responseMarcas.data);
-    }
-  }, [responseMarcas.data]);
 
   useEffect(() => {
     if (responseTipos.data) {
@@ -94,6 +77,24 @@ export const Dashboard = () => {
       setColors(responseColors.data);
     }
   }, [responseColors.data]);
+
+  
+
+  const responseMarcas = useFetch({
+    url: "http://localhost:3000/api/marcas/",
+    options: {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  });
+  useEffect(() => {
+    if (responseMarcas.data) {
+      setMarcas(responseMarcas.data);
+      console.log(responseMarcas.data);
+    }
+  }, [responseMarcas.data]);
 
   const responseSizes = useFetch({
     url: "http://localhost:3000/api/talles/",
@@ -420,6 +421,8 @@ export const Dashboard = () => {
     modalCreateSize.classList.toggle("show");
   };
 
+  
+
   const handleSaveSize = async () => {
     const nombre = document.querySelector("#nombreTalle").value;
 
@@ -466,6 +469,53 @@ export const Dashboard = () => {
       );
     }
   }, [responseDeleteSize.data]);
+
+  const responseCreateMarca = useFetch({ autoFetch: false });
+  const refetchCreateMarca = responseCreateMarca.refetch;
+
+  const handleOpenCreateMarca = () => {
+    const modalCreateMarca = document.querySelector("#modalCreateMarca");
+    modalCreateMarca.classList.toggle("show");
+  };
+
+  const handleSaveMarca = async () => {
+    const nombre = document.querySelector("#nombreMarca").value;
+    await refetchCreateMarca({
+      url: "http://localhost:3000/api/marcas/",
+      options: {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ nombre }),
+      },
+    });
+  };
+  useEffect(() => {
+    if (responseCreateMarca.data) {
+      setMarcas((prev) => [...prev, responseCreateMarca.data]);
+      handleOpenCreateMarca();
+    }
+  }, [responseCreateMarca.data]);
+
+  const responseDeleteMarca = useFetch({ autoFetch: false });
+  const refetchDeleteMarca = responseDeleteMarca.refetch;
+
+  const handleDeleteMarca = async (id) => {
+    await refetchDeleteMarca({
+      url: `http://localhost:3000/api/marcas/${id}`,
+      options: {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    });
+  };
+  
+  
 
   if (loadingClothes) return <h1>Cargando...</h1>;
 
@@ -564,6 +614,7 @@ export const Dashboard = () => {
                 />
                 <h3>{clothe.nombre}</h3>
                 <p>{clothe.tipo}</p>
+                <p>{clothe.Marca.nombre}</p>
               </div>
               <div className="dashboard-clothe-buttons">
                 <button
@@ -813,7 +864,30 @@ export const Dashboard = () => {
               </article>
             ))}
         </div>
+        
       </div>
+      <div className="dashboard-colors-container">
+          <h2>Marcas</h2>
+          <button
+            className="dashboard-clothe-button"
+            onClick={() => handleOpenCreateMarca()}
+          >
+            <CiCirclePlus />
+          </button>
+          <div id="modalCreateMarca">
+            <label htmlFor="nombreMarca">Nombre:</label>
+            <input type="text" id="nombreMarca" name="marca" />
+            <button className="dashboard-clothe-button" onClick={() => handleSaveMarca()}><CiCircleCheck /></button>
+          </div>
+          {marcas &&
+            marcas.map((marca) => (
+              <article key={`${marca.id} ${marca.nombre}`}>
+                <p>{marca.nombre}</p>
+                <button className="dashboard-clothe-button" onClick={() => handleDeleteMarca(marca.id)}><CiTrash /></button>
+              </article>
+            ))}
+          
+        </div>
     </main>
   );
 };
