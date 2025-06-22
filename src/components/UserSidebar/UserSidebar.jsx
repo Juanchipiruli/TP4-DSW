@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./UserSidebar.css";
 import { useAuth } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
@@ -9,10 +9,23 @@ import { IoIosArrowDown } from "react-icons/io";
 
 export const UserSidebar = ({ open, onClose, handleFilterProducts }) => {
     const { logout, isAdmin } = useAuth();
+    const [activeFilter, setActiveFilter] = useState(null);
+
     const handleLogout = () => {
         logout();
         onClose();
     };
+
+    const handleCurrent = (tipo) => {
+      const productosContent = document.getElementById("productos-content");
+      productosContent.classList.toggle("current");
+      if (activeFilter === tipo) {
+        setActiveFilter(null);
+      } else {
+        setActiveFilter(tipo);
+      }
+      handleFilterProducts(tipo);
+    }
 
     const handleViewProductos = () => {
       const productosContent = document.getElementById("productos-content");
@@ -45,7 +58,14 @@ export const UserSidebar = ({ open, onClose, handleFilterProducts }) => {
           <div id="productos-content">
             {responseTipos.data && responseTipos.data.map((tipo) => (
               <div key={tipo} className="productos-item">
-                <button id="tipo-btn" key={tipo} className="sidebar-btn" onClick={() => handleFilterProducts(tipo)}>{tipo}</button>
+                <button 
+                  id="tipo-btn" 
+                  key={tipo} 
+                  className={`sidebar-btn ${activeFilter === tipo ? 'active-filter' : ''}`} 
+                  onClick={() => handleCurrent(tipo)}
+                >
+                  {tipo}
+                </button>
               </div>
             ))}
           </div>

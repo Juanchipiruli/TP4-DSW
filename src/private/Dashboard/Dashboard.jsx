@@ -958,7 +958,7 @@ export const Dashboard = () => {
               <CiCircleCheck />
             </button>
           </div>
-          <div className="dashboard-colors-container">
+          <div className="dashboard-general-container">
           {colors &&
             colors.map((color) => (
               <article key={color.codigo_hex}>
@@ -971,13 +971,10 @@ export const Dashboard = () => {
                   }}
                 ></div>
                 <p>{color.nombre}</p>
-                <button
-                  className="dashboard-clothe-button"
-                  onClick={() => handleDeleteColor(color.id)}
-                >
-                  <CiTrash />
-                </button>
-                <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateColor(color.id)}><CiEdit /></button>
+                <div className="dashboard-clothe-buttons">
+                  <button className="dashboard-clothe-button" onClick={() => handleDeleteColor(color.id)}><CiTrash /></button>
+                  <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateColor(color.id)}><CiEdit /></button>
+                </div>
                 <div className="modalEditMarca" id={`modalEditColor${color.id}`}>
                   <label htmlFor="colorPicker">Elige un color:</label>
                   <input
@@ -1010,18 +1007,15 @@ export const Dashboard = () => {
               <button className="dashboard-clothe-button" onClick={handleSaveSize}><CiCircleCheck /></button>
             </div>
           </div>
-          <div className="dashboard-colors-container">
+          <div className="dashboard-general-container" id="dashboard-general-container-sizes">
           {sizes &&
             sizes.map((size) => (
               <article key={size.nombre}>
-                <p>{size.nombre}</p>
-                <button
-                  className="dashboard-clothe-button"
-                  onClick={() => handleDeleteSize(size.id)}
-                >
-                  <CiTrash />
-                </button>
-                <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateSize(size.id)}><CiEdit /></button>
+                <p>{size.nombre.toUpperCase()}</p>
+                <div className="dashboard-clothe-buttons">
+                  <button className="dashboard-clothe-button" onClick={() => handleDeleteSize(size.id)}><CiTrash /></button>
+                  <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateSize(size.id)}><CiEdit /></button>
+                </div>
                 <div className="modalEditMarca" id={`modalEditSize${size.id}`}>
                   <label htmlFor="nombreSize">Nombre:</label>
                   <input type="text" id={`nombreSize${size.id}`} name="size" />
@@ -1046,12 +1040,15 @@ export const Dashboard = () => {
             <input type="text" id="nombreMarca" name="marca" />
             <button className="dashboard-clothe-button" onClick={() => handleSaveMarca()}><CiCircleCheck /></button>
           </div>
+          <div className="dashboard-general-container">
           {marcas &&
             marcas.map((marca) => (
               <article key={`${marca.id} ${marca.nombre}`}>
                 <p>{marca.nombre}</p>
-                <button className="dashboard-clothe-button" onClick={() => handleDeleteMarca(marca.id)}><CiTrash /></button>
-                <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateMarca(marca.id)}><CiEdit /></button>
+                <div className="dashboard-clothe-buttons">
+                  <button className="dashboard-clothe-button" onClick={() => handleDeleteMarca(marca.id)}><CiTrash /></button>
+                  <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateMarca(marca.id)}><CiEdit /></button>
+                </div>
                 <div className="modalEditMarca" id={`modalEditMarca${marca.id}`}>
                   <label htmlFor="nombreMarca">Nombre:</label>
                   <input type="text" id={`nombreMarca${marca.id}`} name="marca" />
@@ -1060,6 +1057,7 @@ export const Dashboard = () => {
               </article>
             ))
           }
+          </div>
           {responseDeleteMarca.error && <Error text={responseDeleteMarca.error} />}
         </div>
     </main>

@@ -137,6 +137,11 @@
     display: block;
   }
 
+  #productos-content.current {
+    display: block;
+    background: var(--dark-background);
+  }
+
   #tipo-btn {
     border-bottom: none;
     background: var(--background-color);
@@ -145,4 +150,15 @@
   #tipo-btn:hover {
     background: var(--dark-background);
     box-shadow: none;
+  }
+
+  #tipo-btn.active-filter {
+    background: var(--dark-background);
+    color: var(--secondary-color);
+    transition: all 0.3s;
+  }
+
+  #tipo-btn.active-filter:hover {
+    background: var(--secondary-color);
+    color: var(--background-color);
   }

@@ -170,6 +170,10 @@
   gap: 10px;
 }
 
+.dashboard-clothe-info:hover{
+  cursor: pointer;
+}
+
 .dashboard-clothe-info img{
   height: 80px;
   max-width: 60px;
@@ -187,6 +191,14 @@
   width: 100%;
 }
 
+.dashboard-clothe-info p{
+  color: rgba(245, 245, 245, 0.342);
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 0px 0px 0px 10px;
+  padding: 0;
+}
+
 .dashboard-clothe-button{
   width: clamp(10px, 35px, 35px);
   height: clamp(10px, 35px, 35px);
@@ -202,10 +214,14 @@
   grid-template-columns: 1fr 1fr;
 }
 
-.dashboard-colors-container h2{
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: whitesmoke;
+.dashboard-general-container{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  transition: all 0.4s;
+  background-color: var(--background-color);
 }
 
 .dashboard-colors-container{
@@ -214,6 +230,12 @@
   gap: 10px;
   align-items: center;
   width: 100%;
+  transition: all 0.4s;
+}
+.dashboard-colors-container h2{
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: whitesmoke;
 }
 .dashboard-colors-container article{
   width: clamp(100px, 60%, 60%);
@@ -445,7 +467,51 @@
 }
 
 .modalEditMarca.show {
-  display: block;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-around;
+}
+
+.modalEditMarca.show label{
+
+  color: whitesmoke;
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 0px 0px 0px 10px;
+  padding: 0;
+}
+
+.modalEditColor.show{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-around;
+}
+
+.modalEditColor.show label{
+  color: whitesmoke;
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 0px 0px 0px 10px;
+  padding: 0;
+}
+
+.modalEditSize.show{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-around;
+}
+.modalEditSize.show label{
+  color: whitesmoke;
+  font-size: 1rem;
+  font-weight: 400;
+  margin: 0px 0px 0px 10px;
+  padding: 0;
 }
 
 @media screen and (max-width: 768px) {
