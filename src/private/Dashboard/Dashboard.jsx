@@ -543,6 +543,122 @@ export const Dashboard = () => {
     }
   }, [responseDeleteMarca.data]);
 
+  const responseUpdateMarca = useFetch({ autoFetch: false });
+  const refetchUpdateMarca = responseUpdateMarca.refetch;
+
+  const handleOpenUpdateMarca = (id) => {
+    const modalEditMarca = document.querySelector(`#modalEditMarca${id}`);
+    modalEditMarca.classList.toggle("show");
+  }
+
+  const handleSaveUpdateMarca = async (id) => {
+    const nombre = document.querySelector(`#nombreMarca${id}`).value;
+    await refetchUpdateMarca({
+      url: `http://localhost:3000/api/marcas/${id}`,
+      options: {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ nombre }),
+      },
+    });
+  }
+
+  useEffect(() => {
+    if (responseUpdateMarca.data) {
+      setMarcas((prev) =>
+        prev.map((marca) =>
+          marca.id === responseUpdateMarca.data.id
+            ? responseUpdateMarca.data
+            : marca
+        )
+      );
+      handleOpenUpdateMarca(responseUpdateMarca.data.id);
+    }
+  }, [responseUpdateMarca.data]);
+
+  const responseUpdateSize = useFetch({ autoFetch: false });
+  const refetchUpdateSize = responseUpdateSize.refetch;
+
+  const handleOpenUpdateSize = (id) => {
+    const modalEditSize = document.querySelector(`#modalEditSize${id}`);
+    modalEditSize.classList.toggle("show");
+  }
+
+  const handleSaveUpdateSize = async (id) => {
+    const nombre = document.querySelector(`#nombreSize${id}`).value;
+    await refetchUpdateSize({
+      url: `http://localhost:3000/api/talles/${id}`,
+      options: {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ nombre }),
+      },
+    });
+  }
+
+  useEffect(() => {
+    if (responseUpdateSize.data) {
+      setSizes((prev) =>
+        prev.map((size) =>
+          size.id === responseUpdateSize.data.id
+            ? responseUpdateSize.data
+            : size
+        )
+      );
+      handleOpenUpdateSize(responseUpdateSize.data.id);
+    }
+  }, [responseUpdateSize.data]);
+
+  const responseUpdateColor = useFetch({ autoFetch: false });
+  const refetchUpdateColor = responseUpdateColor.refetch;
+
+  const handleOpenUpdateColor = (id) => {
+    const modalEditColor = document.querySelector(`#modalEditColor${id}`);
+    modalEditColor.classList.toggle("show");
+  }
+
+  const handleSaveUpdateColor = async (id) => {
+    const nombre = document.querySelector(`#nombreColor${id}`).value;
+    const colorPicker = document.querySelector(`#colorPicker${id}`).value;
+
+    const color = colorPicker.replace("#", "");
+    
+    const body = {
+      ...(nombre && { nombre: nombre }),
+      ...(color && { codigo_hex: color }),
+    };
+    await refetchUpdateColor({
+      url: `http://localhost:3000/api/colores/${id}`,
+      options: {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      },
+    });
+  }
+
+  useEffect(() => {
+    if (responseUpdateColor.data) {
+      setColors((prev) =>
+        prev.map((color) =>
+          color.id === responseUpdateColor.data.id
+            ? responseUpdateColor.data
+            : color
+        )
+      );
+      handleOpenUpdateColor(responseUpdateColor.data.id);
+    }
+  }, [responseUpdateColor.data])
+
   if (loadingClothes) return <h1>Cargando...</h1>;
 
   if (errorClothes) return <h1>Error: {errorClothes}</h1>;
@@ -861,23 +977,40 @@ export const Dashboard = () => {
                 >
                   <CiTrash />
                 </button>
+                <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateColor(color.id)}><CiEdit /></button>
+                <div className="modalEditMarca" id={`modalEditColor${color.id}`}>
+                  <label htmlFor="colorPicker">Elige un color:</label>
+                  <input
+                    type="color"
+                    id={`colorPicker${color.id}`}
+                    name="color"
+                    defaultValue="#ff0000"
+                  />
+                  <label htmlFor="nombreColor">Nombre:</label>
+                  <input type="text" id={`nombreColor${color.id}`} name="color" />
+                  <button className="dashboard-clothe-button" onClick={() => handleSaveUpdateColor(color.id)}><CiCircleCheck /></button>
+                </div>
               </article>
             ))}
+          {responseDeleteColor.error && <Error text={responseDeleteColor.error} />}
           </div>
         </div>
         <div className="dashboard-colors-container">
-          <h2>Talles</h2>
-          <button
-            className="dashboard-clothe-button"
-            onClick={handleOpenCreateSize}
-          >
-            <CiCirclePlus />
-          </button>
-          <div id="modalCreateSize">
-            <label htmlFor="nombreTalle">Nombre:</label>
-            <input type="text" id="nombreTalle" name="talle" />
-            <button className="dashboard-clothe-button" onClick={handleSaveSize}><CiCircleCheck /></button>
+          <div className="dashboard-colors-container">
+            <h2>Talles</h2>
+            <button
+              className="dashboard-clothe-button"
+              onClick={handleOpenCreateSize}
+            >
+              <CiCirclePlus />
+            </button>
+            <div id="modalCreateSize">
+              <label htmlFor="nombreTalle">Nombre:</label>
+              <input type="text" id="nombreTalle" name="talle" />
+              <button className="dashboard-clothe-button" onClick={handleSaveSize}><CiCircleCheck /></button>
+            </div>
           </div>
+          <div className="dashboard-colors-container">
           {sizes &&
             sizes.map((size) => (
               <article key={size.nombre}>
@@ -888,10 +1021,17 @@ export const Dashboard = () => {
                 >
                   <CiTrash />
                 </button>
+                <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateSize(size.id)}><CiEdit /></button>
+                <div className="modalEditMarca" id={`modalEditSize${size.id}`}>
+                  <label htmlFor="nombreSize">Nombre:</label>
+                  <input type="text" id={`nombreSize${size.id}`} name="size" />
+                  <button className="dashboard-clothe-button" onClick={() => handleSaveUpdateSize(size.id)}><CiCircleCheck /></button>
+                </div>
               </article>
             ))}
+          </div>
+          {responseDeleteSize.error && <Error text={responseDeleteSize.error} />}
         </div>
-        
       </div>
       <div className="dashboard-colors-container">
           <h2>Marcas</h2>
@@ -911,6 +1051,12 @@ export const Dashboard = () => {
               <article key={`${marca.id} ${marca.nombre}`}>
                 <p>{marca.nombre}</p>
                 <button className="dashboard-clothe-button" onClick={() => handleDeleteMarca(marca.id)}><CiTrash /></button>
+                <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateMarca(marca.id)}><CiEdit /></button>
+                <div className="modalEditMarca" id={`modalEditMarca${marca.id}`}>
+                  <label htmlFor="nombreMarca">Nombre:</label>
+                  <input type="text" id={`nombreMarca${marca.id}`} name="marca" />
+                  <button className="dashboard-clothe-button" onClick={() => handleSaveUpdateMarca(marca.id)}><CiCircleCheck /></button>
+                </div>
               </article>
             ))
           }

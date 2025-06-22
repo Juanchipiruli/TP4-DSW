@@ -12,6 +12,7 @@ import { useAuth } from "../../context/AuthContext";
 
 export const MainView = () => {
   const [prendas, setPrendas] = useState([]);
+  const [filter, setFilter] = useState([]);
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { isAuthenticated } = useAuth();
@@ -34,6 +35,14 @@ export const MainView = () => {
       console.log(error);
     }
   }, [data]); 
+
+  const handleFilterProducts = (tipo) => {
+    if (filter[0]?.tipo === tipo) {
+      setFilter([]);
+    } else {
+      setFilter(prendas.filter((prenda) => prenda.tipo === tipo));
+    }
+  }
 
   if (loading) return <div className="mainview-loading">Cargando prendas...</div>;
 
@@ -60,15 +69,17 @@ export const MainView = () => {
         </div>
       </header>
       <div className="mainview-grid">
-        {prendas.map((prenda) => (
+        {filter.length === 0 ? prendas.map((prenda) => (
+          <TarjetasPrenda key={prenda.id} prenda={prenda} />
+        )) : filter.map((prenda) => (
           <TarjetasPrenda key={prenda.id} prenda={prenda} />
         ))}
       </div>
       <UserSidebar
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
-        onProductos={() => alert("Ir a productos")}
-        onLogout={() => alert("Cerrar sesión")}
+        handleFilterProducts={handleFilterProducts}
+
       />
     </div>
   );

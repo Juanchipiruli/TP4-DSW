@@ -7,7 +7,7 @@ import { IoIosArrowDown } from "react-icons/io";
 
 
 
-export const UserSidebar = ({ open, onClose, onLogout }) => {
+export const UserSidebar = ({ open, onClose, handleFilterProducts }) => {
     const { logout, isAdmin } = useAuth();
     const handleLogout = () => {
         logout();
@@ -45,7 +45,7 @@ export const UserSidebar = ({ open, onClose, onLogout }) => {
           <div id="productos-content">
             {responseTipos.data && responseTipos.data.map((tipo) => (
               <div key={tipo} className="productos-item">
-                <button id="tipo-btn" key={tipo} className="sidebar-btn" onClick={() => handleViewProductos(tipo)}>{tipo}</button>
+                <button id="tipo-btn" key={tipo} className="sidebar-btn" onClick={() => handleFilterProducts(tipo)}>{tipo}</button>
               </div>
             ))}
           </div>

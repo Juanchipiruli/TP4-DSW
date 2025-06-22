@@ -440,6 +440,14 @@
   padding: 0;
 }
 
+.modalEditMarca {
+  display: none;
+}
+
+.modalEditMarca.show {
+  display: block;
+}
+
 @media screen and (max-width: 768px) {
   .dashboard-colors-y-sizes{
     width: 100%;
