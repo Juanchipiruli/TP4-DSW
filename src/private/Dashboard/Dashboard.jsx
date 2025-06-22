@@ -9,6 +9,7 @@ import { CiTrash } from "react-icons/ci";
 import { CiCirclePlus } from "react-icons/ci";
 import { IoReturnUpBack } from "react-icons/io5";
 import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
+import { Error } from "../../components";
 
 export const Dashboard = () => {
   const [clothes, setClothes] = useState([]);
@@ -18,6 +19,7 @@ export const Dashboard = () => {
   const [sizes, setSizes] = useState([]);
   const [marcas, setMarcas] = useState([]);
   const [tipos, setTipos] = useState([]);
+  const [error, setError] = useState(null);
 
   const { token } = useAuth();
 
@@ -92,7 +94,6 @@ export const Dashboard = () => {
   useEffect(() => {
     if (responseMarcas.data) {
       setMarcas(responseMarcas.data);
-      console.log(responseMarcas.data);
     }
   }, [responseMarcas.data]);
 
@@ -119,13 +120,6 @@ export const Dashboard = () => {
   const responseDataStocks = useFetch({ autoFetch: false });
 
   const refetchDataStocks = responseDataStocks.refetch;
-
-  const responseCreatePrenda = useFetch({ autoFetch: false });
-
-  const refetchCreatePrenda = responseCreatePrenda.refetch;
-
-  const responseUpdatePrenda = useFetch({ autoFetch: false });
-  const refetchUpdatePrenda = responseUpdatePrenda.refetch;
 
   useEffect(() => {
     setClothes(dataClothes);
@@ -171,6 +165,10 @@ export const Dashboard = () => {
     }
   };
 
+  const responseCreatePrenda = useFetch({ autoFetch: false });
+
+  const refetchCreatePrenda = responseCreatePrenda.refetch;
+
   const handleCreate = async (id) => {
     const panelCreate = document.querySelector(`#panelCreate-${id}`);
 
@@ -192,9 +190,10 @@ export const Dashboard = () => {
 
     // Validar campos obligatorios
     if (!nombreValue || !marcaValue || isNaN(precioValue) || precioValue <= 0 || !tipoValue) {
-      alert(
-        "Los campos nombre, marca, precio y tipo son obligatorios. El precio debe ser mayor a 0"
-      );
+      setError("Los campos nombre, marca, precio y tipo son obligatorios. El precio debe ser mayor a 0");
+      setTimeout(() => {
+        setError(null);
+      }, 3000);
       return;
     }
 
@@ -217,6 +216,16 @@ export const Dashboard = () => {
     });
   };
 
+  useEffect(() => {
+    if (responseCreatePrenda.data) {
+      setClothes((prevClothes) => [...prevClothes, responseCreatePrenda.data]);
+      handleCloseEdit("Create");
+    }
+  }, [responseCreatePrenda.data]);
+
+  const responseUpdatePrenda = useFetch({ autoFetch: false });
+  const refetchUpdatePrenda = responseUpdatePrenda.refetch;
+
   const handleUpdatePrenda = async (id) => {
     const nombreValue = document
       .querySelector(`#modalEdit-${id} #nombre`)
@@ -229,8 +238,6 @@ export const Dashboard = () => {
     const imagenesValue = document
       .querySelector(`#modalEdit-${id} #imagenes`)
       .value.trim();
-
-    console.log("ID: ", id);
 
     const body = {
       ...(nombreValue && { nombre: nombreValue }),
@@ -252,6 +259,19 @@ export const Dashboard = () => {
       },
     });
   };
+
+  useEffect(() => {
+    if (responseUpdatePrenda.data) {
+      setClothes((prevClothes) =>
+        prevClothes.map((clothe) =>
+          clothe.id === responseUpdatePrenda.data.id
+            ? responseUpdatePrenda.data
+            : clothe
+        )
+      );
+      handleCloseEdit("Edit", responseUpdatePrenda.data.id);
+    }
+  }, [responseUpdatePrenda.data]);
 
   const handleSaveStock = async (id) => {
     const cantidadValue = document.querySelector(`#cantidad${id}`).value;
@@ -515,7 +535,13 @@ export const Dashboard = () => {
     });
   };
   
-  
+  useEffect(() => {
+    if (responseDeleteMarca.data) {
+      setMarcas((prev) =>
+        prev.filter((marca) => marca.id !== responseDeleteMarca.data.marca.id)
+      );
+    }
+  }, [responseDeleteMarca.data]);
 
   if (loadingClothes) return <h1>Cargando...</h1>;
 
@@ -582,6 +608,7 @@ export const Dashboard = () => {
                 placeholder="URL de la imagen"
               />
             </form>
+            {error && <Error text={error}/>}
           </div>
           <div className="buttons-container">
           <button
@@ -885,8 +912,9 @@ export const Dashboard = () => {
                 <p>{marca.nombre}</p>
                 <button className="dashboard-clothe-button" onClick={() => handleDeleteMarca(marca.id)}><CiTrash /></button>
               </article>
-            ))}
-          
+            ))
+          }
+          {responseDeleteMarca.error && <Error text={responseDeleteMarca.error} />}
         </div>
     </main>
   );
