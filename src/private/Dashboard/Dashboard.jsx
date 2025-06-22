@@ -42,7 +42,7 @@ export const Dashboard = () => {
   });
 
   const responseTipos = useFetch({
-    url: "http://localhost:3000/api/prendas/tipos/",
+    url: "http://localhost:3000/api/prendas/types/",
     options: {
       method: "GET",
       headers: {
@@ -190,9 +190,9 @@ export const Dashboard = () => {
       .value.trim();
 
     // Validar campos obligatorios
-    if (!nombreValue || !marcaValue || isNaN(precioValue) || precioValue <= 0) {
+    if (!nombreValue || !marcaValue || isNaN(precioValue) || precioValue <= 0 || !tipoValue) {
       alert(
-        "Los campos nombre, marca y precio son obligatorios. El precio debe ser mayor a 0"
+        "Los campos nombre, marca, precio y tipo son obligatorios. El precio debe ser mayor a 0"
       );
       return;
     }
@@ -209,7 +209,7 @@ export const Dashboard = () => {
           nombre: nombreValue,
           marca_id: marcaValue,
           precio: precioValue,
-          ...(tipoValue && { tipo_id: tipoValue }),
+          tipo: tipoValue,
           ...(imagenesValue && { imagenes: imagenesValue }),
         }),
       },
@@ -233,7 +233,7 @@ export const Dashboard = () => {
 
     const body = {
       ...(nombreValue && { nombre: nombreValue }),
-      ...(tipoValue && { tipo_id: tipoValue }),
+      ...(tipoValue && { tipo: tipoValue }),
       ...(marcaValue && { marca_id: marcaValue }),
       ...(precioValue && { precio: precioValue }),
       ...(imagenesValue && { imagenes: imagenesValue }),
@@ -502,10 +502,10 @@ export const Dashboard = () => {
               <select id="tipo">
                 {tipos.map((tipo) => (
                   <option
-                    key={`${tipo.id} + ${tipo.nombre}`}
-                    value={tipo.id}
+                    key={`${tipo}`}
+                    value={tipo}
                   >
-                    {tipo.nombre}
+                    {tipo}
                   </option>
                 ))}
               </select>
@@ -563,6 +563,7 @@ export const Dashboard = () => {
                   alt={`Imagen de la prenda ${clothe.nombre}`}
                 />
                 <h3>{clothe.nombre}</h3>
+                <p>{clothe.tipo}</p>
               </div>
               <div className="dashboard-clothe-buttons">
                 <button
@@ -601,10 +602,10 @@ export const Dashboard = () => {
                     <select id="tipo">
                       {tipos.map((tipo) => (
                         <option
-                          key={`${tipo.id} + ${tipo.nombre}`}
-                          value={tipo.id}
+                          key={`${tipo}`}
+                          value={tipo}
                         >
-                          {tipo.nombre}
+                          {tipo}
                         </option>
                       ))}
                     </select>
