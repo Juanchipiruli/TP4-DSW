@@ -1,27 +1,10 @@
 import "../UserSidebar/UserSidebar.css";
-import { useFetch } from "../../hooks/useFetch";
-import { useAuth } from "../../context/AuthContext";
-import { useEffect, useState } from "react";
+import { useCart } from "../../context/CartContext";
 
 export const CartSidebar = ({ open, onClose }) => {
-  const { user, token } = useAuth();
+  const { cart } = useCart();
 
-  const { data, error, loading, refetch } = useFetch({
-    autoFetch: false
-  });
-
-  useEffect(() => {
-    refetch({
-      url: `http://localhost:3000/api/carritos/user/${user.id}`,
-      options: {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    });
-  }, [])
+  console.log(cart);
 
   return (
     <div className={`user-sidebar ${open ? "open" : ""}`}>
@@ -33,17 +16,19 @@ export const CartSidebar = ({ open, onClose }) => {
       </header>
       <div className="sidebar-content">
         <div className="sidebar-btn-spacer" />
-        {data && data.length > 0 ? (
+        {cart && cart.Stocks.length > 0 ? (
           <>
-            {data.map((item) => (
+            {cart.Stocks.map((item) => (
               <div key={item.id}>
-                <p>{item.nombre}</p>
-                <p>{item.precio}</p>
+                <img src={item.Prenda.imagenes} alt="Imagen de la prenda" />
+                <p>Cantidad: {item.CarritoStock.cantidad}</p>
+                <p>Prenda: {item.Prenda.nombre}</p>
+                <p>Precio: ${item.Prenda.precio * item.CarritoStock.cantidad}</p>
               </div>
             ))}
           </>
         ) : (
-          <p>{error}</p>
+          <p>Carrito vacio</p>
         )}
       </div>
     </div>

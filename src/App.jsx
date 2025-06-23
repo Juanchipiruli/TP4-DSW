@@ -1,9 +1,12 @@
 import { AuthProvider } from "./context/AuthContext";
+import { CartProvider } from "./context/CartContext";
 
 export const App = ({ children }) => {
   return (
-    <AuthProvider>
-      {children}
-    </AuthProvider>
+    <CartProvider>
+      <AuthProvider>
+        {children}
+      </AuthProvider>
+    </CartProvider>
   )
 }

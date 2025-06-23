@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, useEffect } from 'react';
+import { useCart } from './CartContext';
 
 const AuthContext = createContext();
 
@@ -7,6 +8,28 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [token, setToken] = useState(null);
+
+  const { setCart } = useCart();
+
+  useEffect(() => {
+    const fetchCart = async () => {
+      const responseCart = await fetch(`http://localhost:3000/api/carritos/user/${user.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const dataCart = await responseCart.json();
+
+      setCart(dataCart);
+    }
+
+    if (user) {
+      fetchCart();
+    }
+  }, [user]);
 
   // Función para iniciar sesión
   const login = async (credentials) => {
@@ -18,7 +41,7 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
       
       if (!response.ok) throw new Error(data.message);
-      
+
       setUser(data.user);
       // Guardar token en localStorage
       localStorage.setItem('token', data.token);

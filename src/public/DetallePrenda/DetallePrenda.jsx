@@ -6,6 +6,8 @@ import "./DetallePrenda.css";
 import { FaCartShopping } from "react-icons/fa6";
 import { IoReturnUpBack } from "react-icons/io5";
 import { useFetch } from "../../hooks/useFetch";
+import { useCart } from "../../context/CartContext";
+import { useAuth } from "../../context/AuthContext";
 
 export const DetallePrenda = () => {
   const { id } = useParams();
@@ -16,6 +18,9 @@ export const DetallePrenda = () => {
   const [colorSeleccionado, setColorSeleccionado] = useState("");
   const [talleSeleccionado, setTalleSeleccionado] = useState("");
   const [cantidad, setCantidad] = useState(1);
+
+  const { cart, setCart } = useCart();
+  const { token } = useAuth();
 
   useEffect(() => {
     // Obtener la prenda específica por ID
@@ -96,7 +101,10 @@ export const DetallePrenda = () => {
     return stockItem ? stockItem.cantidad : 0;
   };
 
-  const handleAgregarAlCarrito = () => {
+  const responseAddToCarrito = useFetch({ autoFetch: false });
+  const refetchAddToCarrito = responseAddToCarrito.refetch;
+
+  const handleAgregarAlCarrito = async () => {
     if (!colorSeleccionado || !talleSeleccionado) {
       alert("Por favor selecciona un color y un talle");
       return;
@@ -112,19 +120,35 @@ export const DetallePrenda = () => {
       return;
     }
 
-    // Aquí iría la lógica para agregar al carrito
-    const itemCarrito = {
-      prendaId: prenda.id,
-      nombre: prenda.nombre,
-      precio: prenda.precio,
-      color: colorSeleccionado,
-      talle: talleSeleccionado,
-      cantidad: cantidad,
-      imagen: prenda.imagenes
-    };
+    const stock_id = stock.filter(s => {
+      if (s.Color.nombre === colorSeleccionado && s.Talle.nombre === talleSeleccionado) {
+        return s;
+      }
+    })
 
-
+    await refetchAddToCarrito({
+      url: "http://localhost:3000/api/carritos/item/",
+      options: {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ carrito_id: cart.id, stock_id: stock_id[0].id, cantidad: cantidad, prenda_id: stock_id[0].prenda_id})
+      }
+    });
   };
+
+  useEffect(() => {
+    if (responseAddToCarrito.data) {
+      const newStocks = [...cart.Stocks, responseAddToCarrito.data.carritoStock];
+      console.log(responseAddToCarrito.data);
+      setCart(prevCart => ({
+        ...prevCart,
+        Stocks: newStocks
+      }));
+    }
+  }, [responseAddToCarrito.data])
 
   if (loading) {
     return <div className="detalle-loading">Cargando prenda...</div>;
