@@ -54,11 +54,7 @@ export const MainView = () => {
           <button
             className="mainview-header-button"
             onClick={() => {
-              if (isAuthenticated()) {
-                setSidebarOpen(true);
-              } else {
-                navigate(AppRoutes.login);
-              }
+              setSidebarOpen(true);
             }}
           >
             <FaRegUser />
@@ -79,7 +75,6 @@ export const MainView = () => {
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         handleFilterProducts={handleFilterProducts}
-
       />
     </div>
   );

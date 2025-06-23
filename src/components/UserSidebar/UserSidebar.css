@@ -128,7 +128,7 @@
   }
 
   #productos-content {
-    display: none;
+    display: none; 
   }
 
   #productos-content.show {
@@ -138,7 +138,6 @@
   }
 
   #productos-content.current {
-    display: block;
     background: var(--dark-background);
   }
 

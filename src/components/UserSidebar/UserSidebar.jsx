@@ -8,7 +8,7 @@ import { IoIosArrowDown } from "react-icons/io";
 
 
 export const UserSidebar = ({ open, onClose, handleFilterProducts }) => {
-    const { logout, isAdmin } = useAuth();
+    const { logout, isAdmin, isAuthenticated } = useAuth();
     const [activeFilter, setActiveFilter] = useState(null);
 
     const handleLogout = () => {
@@ -70,11 +70,17 @@ export const UserSidebar = ({ open, onClose, handleFilterProducts }) => {
             ))}
           </div>
         </div>
-        {isAdmin && (
+        {isAdmin() && (
           <Link to="/dashboard" className="sidebar-btn">
             Dashboard
           </Link>
         )}
+        {!isAuthenticated() && (
+          <Link to="/login" className="sidebar-btn">
+            Iniciar sesión
+          </Link>
+        )}
+
         <div className="sidebar-btn-spacer" />
         
       </div>
