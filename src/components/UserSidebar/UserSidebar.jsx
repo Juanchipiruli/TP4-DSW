@@ -12,8 +12,8 @@ export const UserSidebar = ({ open, onClose, handleFilterProducts }) => {
     const [activeFilter, setActiveFilter] = useState(null);
 
     const handleLogout = () => {
-        logout();
-        onClose();
+      logout();
+      onClose();
     };
 
     const handleCurrent = (tipo) => {

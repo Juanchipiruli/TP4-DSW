@@ -5,6 +5,7 @@ import placeholderImg from "../../assets/placeholder.png";
 import "./DetallePrenda.css";
 import { FaCartShopping } from "react-icons/fa6";
 import { IoReturnUpBack } from "react-icons/io5";
+import { useFetch } from "../../hooks/useFetch";
 
 export const DetallePrenda = () => {
   const { id } = useParams();
@@ -113,7 +114,7 @@ export const DetallePrenda = () => {
 
     // Aquí iría la lógica para agregar al carrito
     const itemCarrito = {
-      prendaId: prenda._id,
+      prendaId: prenda.id,
       nombre: prenda.nombre,
       precio: prenda.precio,
       color: colorSeleccionado,
@@ -122,9 +123,7 @@ export const DetallePrenda = () => {
       imagen: prenda.imagenes
     };
 
-    console.log("Agregando al carrito:", itemCarrito);
-    // TODO: Implementar lógica del carrito
-    alert("Producto agregado al carrito");
+
   };
 
   if (loading) {

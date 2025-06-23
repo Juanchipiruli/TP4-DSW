@@ -7,7 +7,7 @@ import logo from "../../assets/logo.png";
 import { FaRegUser } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
 import { useFetch } from "../../hooks/useFetch";
-import { UserSidebar } from "../../components/UserSidebar/UserSidebar.jsx";
+import { UserSidebar, CartSidebar } from "../../components";
 import { useAuth } from "../../context/AuthContext";
 
 export const MainView = () => {
@@ -15,6 +15,7 @@ export const MainView = () => {
   const [filter, setFilter] = useState([]);
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const { isAuthenticated } = useAuth();
 
   const {data, loading, error} = useFetch({
@@ -59,9 +60,11 @@ export const MainView = () => {
           >
             <FaRegUser />
           </button>
-          <button className="mainview-header-button" onClick={() => navigate(AppRoutes.login)}>
-            <FaCartShopping />
-          </button>
+          {isAuthenticated() && (
+            <button className="mainview-header-button" onClick={() => setCartOpen(true)}>
+              <FaCartShopping />
+            </button>
+          )}
         </div>
       </header>
       <div className="mainview-grid">
@@ -75,6 +78,10 @@ export const MainView = () => {
         open={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         handleFilterProducts={handleFilterProducts}
+      />
+      <CartSidebar
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
       />
     </div>
   );
