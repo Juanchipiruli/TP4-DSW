@@ -175,7 +175,6 @@ export const DetallePrenda = () => {
         <div className="detalle-info-section">
           <h2 className="detalle-nombre">{prenda.nombre}</h2>
           <p className="detalle-precio">${prenda.precio}</p>
-          <p className="detalle-descripcion">{prenda.detalle}</p>
 
           {/* Selector de colores */}
           {coloresDisponibles.length > 0 && (
@@ -190,10 +189,6 @@ export const DetallePrenda = () => {
                     } ${!color.disponible ? "no-disponible" : ""}`}
                     onClick={() => setColorSeleccionado(color.nombre)}
                     disabled={!color.disponible}
-                    style={{
-                      backgroundColor: color.codigo_hex,
-                      borderColor: color.disponible ? color.codigo_hex : "#666"
-                    }}
                   >
                     {color.nombre}
                   </button>
@@ -226,7 +221,7 @@ export const DetallePrenda = () => {
           {/* Información de disponibilidad */}
           {colorSeleccionado && talleSeleccionado && (
             <div className="detalle-disponibilidad">
-              <p>Disponible: {cantidadDisponible} unidades</p>
+              <p>Disponible {colorSeleccionado} {talleSeleccionado}: {cantidadDisponible} unidades</p>
             </div>
           )}
 

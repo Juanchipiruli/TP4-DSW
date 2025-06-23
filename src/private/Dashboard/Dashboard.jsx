@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { AppRoutes } from "../../models/routes.models";
 import { useFetch } from "../../hooks/useFetch";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
@@ -756,8 +755,8 @@ export const Dashboard = () => {
                   alt={`Imagen de la prenda ${clothe.nombre}`}
                 />
                 <h3>{clothe.nombre}</h3>
-                <p>{clothe.tipo}</p>
                 <p>{clothe.Marca.nombre}</p>
+                <p>{clothe.tipo}</p>
               </div>
               <div className="dashboard-clothe-buttons">
                 <button
@@ -959,9 +958,11 @@ export const Dashboard = () => {
             </button>
           </div>
           <div className="dashboard-general-container">
+          <div className="dashboard-general-subcontainer">
           {colors &&
             colors.map((color) => (
-              <article key={color.codigo_hex}>
+              <section key={color.codigo_hex} className="dashboard-general-item">
+                <div className="dashboard-general-item-info">
                 <div className="color-hex"
                   style={{
                     backgroundColor: `#${color.codigo_hex}`,
@@ -975,6 +976,7 @@ export const Dashboard = () => {
                   <button className="dashboard-clothe-button" onClick={() => handleDeleteColor(color.id)}><CiTrash /></button>
                   <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateColor(color.id)}><CiEdit /></button>
                 </div>
+                </div>
                 <div className="modalEditMarca" id={`modalEditColor${color.id}`}>
                   <label htmlFor="colorPicker">Elige un color:</label>
                   <input
@@ -987,8 +989,9 @@ export const Dashboard = () => {
                   <input type="text" id={`nombreColor${color.id}`} name="color" />
                   <button className="dashboard-clothe-button" onClick={() => handleSaveUpdateColor(color.id)}><CiCircleCheck /></button>
                 </div>
-              </article>
-            ))}
+              </section>
+            ))}            
+          </div>
           {responseDeleteColor.error && <Error text={responseDeleteColor.error} />}
           </div>
         </div>
@@ -1008,21 +1011,25 @@ export const Dashboard = () => {
             </div>
           </div>
           <div className="dashboard-general-container" id="dashboard-general-container-sizes">
+          <div className="dashboard-general-subcontainer">
           {sizes &&
             sizes.map((size) => (
-              <article key={size.nombre}>
+              <section key={size.nombre} className="dashboard-general-item">
+                <div className="dashboard-general-item-info">
                 <p>{size.nombre.toUpperCase()}</p>
                 <div className="dashboard-clothe-buttons">
                   <button className="dashboard-clothe-button" onClick={() => handleDeleteSize(size.id)}><CiTrash /></button>
                   <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateSize(size.id)}><CiEdit /></button>
+                </div>
                 </div>
                 <div className="modalEditMarca" id={`modalEditSize${size.id}`}>
                   <label htmlFor="nombreSize">Nombre:</label>
                   <input type="text" id={`nombreSize${size.id}`} name="size" />
                   <button className="dashboard-clothe-button" onClick={() => handleSaveUpdateSize(size.id)}><CiCircleCheck /></button>
                 </div>
-              </article>
+              </section>
             ))}
+          </div>
           </div>
           {responseDeleteSize.error && <Error text={responseDeleteSize.error} />}
         </div>
@@ -1041,22 +1048,26 @@ export const Dashboard = () => {
             <button className="dashboard-clothe-button" onClick={() => handleSaveMarca()}><CiCircleCheck /></button>
           </div>
           <div className="dashboard-general-container">
+          <div className="dashboard-general-subcontainer">
           {marcas &&
             marcas.map((marca) => (
-              <article key={`${marca.id} ${marca.nombre}`}>
+              <section key={`${marca.id} ${marca.nombre}`} className="dashboard-general-item">
+                <div className="dashboard-general-item-info">
                 <p>{marca.nombre}</p>
                 <div className="dashboard-clothe-buttons">
                   <button className="dashboard-clothe-button" onClick={() => handleDeleteMarca(marca.id)}><CiTrash /></button>
                   <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateMarca(marca.id)}><CiEdit /></button>
+                </div>
                 </div>
                 <div className="modalEditMarca" id={`modalEditMarca${marca.id}`}>
                   <label htmlFor="nombreMarca">Nombre:</label>
                   <input type="text" id={`nombreMarca${marca.id}`} name="marca" />
                   <button className="dashboard-clothe-button" onClick={() => handleSaveUpdateMarca(marca.id)}><CiCircleCheck /></button>
                 </div>
-              </article>
+              </section>
             ))
           }
+          </div>
           </div>
           {responseDeleteMarca.error && <Error text={responseDeleteMarca.error} />}
         </div>
