@@ -75,17 +75,19 @@ export const UserSidebar = ({ open, onClose, handleFilterProducts }) => {
             Dashboard
           </Link>
         )}
-        {!isAuthenticated() && (
-          <Link to="/login" className="sidebar-btn">
-            Iniciar sesión
-          </Link>
-        )}
+        
 
         <div className="sidebar-btn-spacer" />
         
       </div>
       <div className="logout-btn-container">
+      {!isAuthenticated() ? (
+          <Link to="/login" className="sidebar-btn">
+            Iniciar sesión
+          </Link>
+        ):(
           <button className="sidebar-btn" onClick={() => handleLogout()}>Cerrar sesión</button>
+        )}
         </div>
     </div>
   );

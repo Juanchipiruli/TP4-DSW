@@ -56,17 +56,23 @@ export const CartSidebar = ({ open, onClose }) => {
   const refetchUpdateItem = responseUpdateItem.refetch;
 
   const handleUpdateItem = async ({idCarrito, idStock}) => {
-    await refetchUpdateItem({
-      url: `http://localhost:3000/api/carritos/item/`,
-      options: {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ carrito_id: idCarrito, stock_id: idStock, cantidad: cart.Stocks.find(item => item.id === idStock).CarritoStock.cantidad })
-      }
-    });
+    const cantidad = cart.Stocks.find(item => item.id === idStock).CarritoStock.cantidad;
+    if (cantidad === 0) {
+      handleDeleteItem({idCarrito, idStock});
+      return;
+    }else if (cantidad > 0) {
+      await refetchUpdateItem({
+        url: `http://localhost:3000/api/carritos/item/`,
+        options: {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ carrito_id: idCarrito, stock_id: idStock, cantidad: cart.Stocks.find(item => item.id === idStock).CarritoStock.cantidad })
+        }
+      });
+    }    
   }
 
   useEffect(() => {
@@ -97,10 +103,22 @@ export const CartSidebar = ({ open, onClose }) => {
                   <p>Talle: {item.Talle.nombre}</p>
                   <p>Color: {item.Color.nombre}</p>
                   {update === item.id ? (
-                    <input type="number" value={item.CarritoStock.cantidad} onChange={(e) => setCart(prevCart => ({
-                      ...prevCart,
-                      Stocks: prevCart.Stocks.map(item => item.id === update ? {...item, CarritoStock: {...item.CarritoStock, cantidad: e.target.value}} : item)
-                    }))} />
+                    <input
+                      type="number"
+                      min={0}
+                      value={item.CarritoStock.cantidad}
+                      onChange={(e) => {
+                        const value = Number(e.target.value);
+                        setCart(prevCart => ({
+                          ...prevCart,
+                          Stocks: prevCart.Stocks.map(i =>
+                            i.id === update
+                              ? { ...i, CarritoStock: { ...i.CarritoStock, cantidad: value } }
+                              : i
+                          )
+                        }));
+                      }}
+                    />
                   ) : (
                     <p>Cantidad: {item.CarritoStock.cantidad}</p>
                   )}
@@ -119,7 +137,7 @@ export const CartSidebar = ({ open, onClose }) => {
             ))}
           </>
         ) : (
-          <p>Carrito vacio</p>
+          <p id="cart-empty">Carrito vacio</p>
         )}
         {cart && cart.Stocks.length > 0 && <button id="consulta-btn" onClick={() => handleSendWathsapp()}>Consultar</button>}
       </div>
