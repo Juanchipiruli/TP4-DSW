@@ -134,7 +134,7 @@ export const DetallePrenda = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ carrito_id: cart.id, stock_id: stock_id[0].id, cantidad: cantidad, prenda_id: stock_id[0].prenda_id})
+        body: JSON.stringify({ carrito_id: cart.id, stock_id: stock_id[0].id, cantidad: cantidad, prenda_id: stock_id[0].prenda_id, talle_id: stock_id[0].talle_id, color_id: stock_id[0].color_id })
       }
     });
   };
