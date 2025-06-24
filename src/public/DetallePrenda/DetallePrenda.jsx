@@ -141,12 +141,14 @@ export const DetallePrenda = () => {
 
   useEffect(() => {
     if (responseAddToCarrito.data) {
-      const newStocks = [...cart.Stocks, responseAddToCarrito.data.carritoStock];
-      console.log(responseAddToCarrito.data);
-      setCart(prevCart => ({
-        ...prevCart,
-        Stocks: newStocks
-      }));
+      setCart(prevCart => {
+        const exist = prevCart.Stocks.some(item => item.id === responseAddToCarrito.data.carritoStock.id);
+        if (exist) {
+          return {...prevCart, Stocks: prevCart.Stocks.map(item => item.id === responseAddToCarrito.data.carritoStock.id ? responseAddToCarrito.data.carritoStock : item)};
+        } else {
+          return {...prevCart, Stocks: [...prevCart.Stocks, responseAddToCarrito.data.carritoStock]};
+        }
+      });
     }
   }, [responseAddToCarrito.data])
 

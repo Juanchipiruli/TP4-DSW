@@ -33,7 +33,6 @@ export const MainView = () => {
       setPrendas(data);
     }else{
       setPrendas([]);
-      console.log(error);
     }
   }, [data]); 
 

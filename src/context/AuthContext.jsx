@@ -73,7 +73,6 @@ export const AuthProvider = ({ children }) => {
     const verifyToken = async () => {
       try {
         setToken(localStorage.getItem('token'));
-        console.log(token);
         if (token) {
           // Verificar token con el backend
           const response = await fetch('http://localhost:3000/api/users/validate-token/', {
