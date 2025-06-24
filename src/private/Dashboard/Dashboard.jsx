@@ -342,7 +342,7 @@ export const Dashboard = () => {
     }
   }, [responseCreateStock.data]);
 
-  const handleEditStock = (id) => {
+  const handleEditStock = (id, idPrenda) => {
     const editValue = document.querySelector(`#edit${id}`).value;
 
     refetchEditStock({
@@ -358,8 +358,7 @@ export const Dashboard = () => {
         }),
       },
     });
-
-    const updateStock = stocks[id].map((stock) =>
+    const updateStock = stocks[idPrenda].map((stock) =>
       stock.id === id ? { ...stock, ...{ cantidad: editValue } } : stock
     );
     setStocks((prevStock) => ({
@@ -884,7 +883,7 @@ export const Dashboard = () => {
                           id={`edit${stock.id}`}
                           placeholder="cantidad"
                         />
-                        <button className="dashboard-clothe-button" onClick={() => handleEditStock(stock.id)}>
+                        <button className="dashboard-clothe-button" onClick={() => handleEditStock(stock.id, stock.Prenda.id)}>
                           <CiCircleCheck />
                         </button>
                       </div>

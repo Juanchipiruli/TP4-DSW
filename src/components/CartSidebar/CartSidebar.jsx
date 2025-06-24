@@ -5,6 +5,7 @@ import { CiTrash, CiEdit } from "react-icons/ci";
 import { CiCircleCheck } from "react-icons/ci";
 import { useFetch } from "../../hooks/useFetch";
 import { useEffect, useState } from "react";
+import { Error } from "../../components";
 
 export const CartSidebar = ({ open, onClose }) => {
   const [update, setUpdate] = useState(null);
@@ -55,8 +56,8 @@ export const CartSidebar = ({ open, onClose }) => {
   const responseUpdateItem = useFetch({ autoFetch: false });
   const refetchUpdateItem = responseUpdateItem.refetch;
 
-  const handleUpdateItem = async ({idCarrito, idStock}) => {
-    const cantidad = cart.Stocks.find(item => item.id === idStock).CarritoStock.cantidad;
+  const handleUpdateItem = async ({idCarrito, idStock, nombrePrenda}) => {
+    const cantidad = document.querySelector(`#${nombrePrenda}${idStock}`).value
     if (cantidad === 0) {
       handleDeleteItem({idCarrito, idStock});
       return;
@@ -69,7 +70,7 @@ export const CartSidebar = ({ open, onClose }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify({ carrito_id: idCarrito, stock_id: idStock, cantidad: cart.Stocks.find(item => item.id === idStock).CarritoStock.cantidad })
+          body: JSON.stringify({ carrito_id: idCarrito, stock_id: idStock, cantidad: cantidad })
         }
       });
     }    
@@ -77,6 +78,14 @@ export const CartSidebar = ({ open, onClose }) => {
 
   useEffect(() => {
     if (responseUpdateItem.data) {
+      setCart(prevCart => ({
+        ...prevCart,
+        Stocks: prevCart.Stocks.map(i =>
+          i.id === responseUpdateItem.data.carritoStock.StockId
+            ? { ...i, ...{ CarritoStock: { ...i.CarritoStock, cantidad: responseUpdateItem.data.carritoStock.cantidad } } }
+            : i
+        )
+      }));
       setUpdate(null);
     }
   }, [responseUpdateItem.data])
@@ -90,6 +99,9 @@ export const CartSidebar = ({ open, onClose }) => {
         </button>
       </header>
       <div className="sidebar-content">
+        {responseUpdateItem.error ? (
+          <Error text={responseUpdateItem.error}/>
+        ) : null}
         <div className="sidebar-btn-spacer" />
         {cart && cart.Stocks.length > 0 ? (
           <>
@@ -106,18 +118,9 @@ export const CartSidebar = ({ open, onClose }) => {
                     <input
                       type="number"
                       min={0}
-                      value={item.CarritoStock.cantidad}
-                      onChange={(e) => {
-                        const value = Number(e.target.value);
-                        setCart(prevCart => ({
-                          ...prevCart,
-                          Stocks: prevCart.Stocks.map(i =>
-                            i.id === update
-                              ? { ...i, CarritoStock: { ...i.CarritoStock, cantidad: value } }
-                              : i
-                          )
-                        }));
-                      }}
+                      max={item.cantidad}
+                      placeholder={item.CarritoStock.cantidad}
+                      id={`${item.Prenda.nombre}${item.id}`}
                     />
                   ) : (
                     <p>Cantidad: {item.CarritoStock.cantidad}</p>
@@ -130,7 +133,7 @@ export const CartSidebar = ({ open, onClose }) => {
                   <button className="cart-item-button" onClick={() => handleDeleteItem({idCarrito: cart.id, idStock: item.id})}><CiTrash/></button>
                   <button className="cart-item-button" onClick={() => handleViewEdit(item.id)}><CiEdit/></button>
                   {update === item.id && (
-                    <button className="cart-item-button" onClick={() => handleUpdateItem({idCarrito: cart.id, idStock: item.id})}><CiCircleCheck/></button>
+                    <button className="cart-item-button" onClick={() => handleUpdateItem({idCarrito: cart.id, idStock: item.id, nombrePrenda: item.Prenda.nombre})}><CiCircleCheck/></button>
                   )}
                 </div>
                 </div>
