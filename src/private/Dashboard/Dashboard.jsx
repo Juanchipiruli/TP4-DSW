@@ -25,7 +25,7 @@ export const Dashboard = () => {
   const handleView = (id) => {
     const modal = document.querySelector(id);
     modal.classList.toggle("show");
-  }
+  };
 
   const responseDataClothes = useFetch({
     url: "http://localhost:3000/api/prendas/",
@@ -190,8 +190,16 @@ export const Dashboard = () => {
       .value.trim();
 
     // Validar campos obligatorios
-    if (!nombreValue || !marcaValue || isNaN(precioValue) || precioValue <= 0 || !tipoValue) {
-      setError("Los campos nombre, marca, precio y tipo son obligatorios. El precio debe ser mayor a 0");
+    if (
+      !nombreValue ||
+      !marcaValue ||
+      isNaN(precioValue) ||
+      precioValue <= 0 ||
+      !tipoValue
+    ) {
+      setError(
+        "Los campos nombre, marca, precio y tipo son obligatorios. El precio debe ser mayor a 0"
+      );
       setTimeout(() => {
         setError(null);
       }, 3000);
@@ -358,16 +366,21 @@ export const Dashboard = () => {
         }),
       },
     });
-    const updateStock = stocks[idPrenda].map((stock) =>
-      stock.id === id ? { ...stock, ...{ cantidad: editValue } } : stock
-    );
-    setStocks((prevStock) => ({
-      ...prevStock,
-      [id]: updateStock,
-    }));
 
     handleView(`#modalEditStock-${id}`);
   };
+
+  useEffect(() => {
+    if (responseEditStock.data) {
+      const updateStock = stocks[responseEditStock.data.stock.prenda_id].map((stock) =>
+        stock.id === responseEditStock.data.stock.id ? { ...stock, ...{ cantidad: responseEditStock.data.stock.cantidad } } : stock
+      );
+      setStocks((prevStock) => ({
+        ...prevStock,
+        [responseEditStock.data.stock.prenda_id]: updateStock,
+      }));
+    }
+  }, [responseEditStock.data])
 
   const responseCreateColor = useFetch({ autoFetch: false });
 
@@ -490,7 +503,7 @@ export const Dashboard = () => {
       },
     });
   };
-  
+
   useEffect(() => {
     if (responseCreateMarca.data) {
       setMarcas((prev) => [...prev, responseCreateMarca.data]);
@@ -513,7 +526,7 @@ export const Dashboard = () => {
       },
     });
   };
-  
+
   useEffect(() => {
     if (responseDeleteMarca.data) {
       setMarcas((prev) =>
@@ -538,7 +551,7 @@ export const Dashboard = () => {
         body: JSON.stringify({ nombre }),
       },
     });
-  }
+  };
 
   useEffect(() => {
     if (responseUpdateMarca.data) {
@@ -569,7 +582,7 @@ export const Dashboard = () => {
         body: JSON.stringify({ nombre }),
       },
     });
-  }
+  };
 
   useEffect(() => {
     if (responseUpdateSize.data) {
@@ -592,7 +605,7 @@ export const Dashboard = () => {
     const colorPicker = document.querySelector(`#colorPicker${id}`).value;
 
     const color = colorPicker.replace("#", "");
-    
+
     const body = {
       ...(nombre && { nombre: nombre }),
       ...(color && { codigo_hex: color }),
@@ -608,7 +621,7 @@ export const Dashboard = () => {
         body: JSON.stringify(body),
       },
     });
-  }
+  };
 
   useEffect(() => {
     if (responseUpdateColor.data) {
@@ -621,7 +634,31 @@ export const Dashboard = () => {
       );
       handleView(`#modalEditColor${responseUpdateColor.data.id}`);
     }
-  }, [responseUpdateColor.data])
+  }, [responseUpdateColor.data]);
+
+  const responseDeleteStock = useFetch({ autoFetch: false });
+  const refetchDeleteStock = responseDeleteStock.refetch;
+
+  const handleDeleteStock = async (id) => {
+    await refetchDeleteStock({
+      url: `http://localhost:3000/api/stocks/${id}`,
+      options: {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (responseDeleteStock.data) {
+      setStocks(prevStocks => ({
+        ...prevStocks, [responseDeleteStock.data.stock.prenda_id]: prevStocks[responseDeleteStock.data.stock.prenda_id].filter(stock => stock.id !== responseDeleteStock.data.stock.id)
+      }))
+    }
+  }, [responseDeleteStock.data]);
 
   if (loadingClothes) return <h1>Cargando...</h1>;
 
@@ -630,12 +667,12 @@ export const Dashboard = () => {
   return (
     <main>
       <div className="dashboard-title-container">
-      <Link to="/">
-        <button className="dashboard-clothe-button">
-        <IoReturnUpBack />
-        </button>
-      </Link>
-      <h1>Dashboard</h1>
+        <Link to="/">
+          <button className="dashboard-clothe-button">
+            <IoReturnUpBack />
+          </button>
+        </Link>
+        <h1>Dashboard</h1>
       </div>
       <header className="dashboard-header">
         <h2>Prendas</h2>
@@ -657,10 +694,7 @@ export const Dashboard = () => {
               />
               <select id="tipo">
                 {tipos.map((tipo) => (
-                  <option
-                    key={`${tipo}`}
-                    value={tipo}
-                  >
+                  <option key={`${tipo}`} value={tipo}>
                     {tipo}
                   </option>
                 ))}
@@ -688,19 +722,11 @@ export const Dashboard = () => {
                 placeholder="URL de la imagen"
               />
             </form>
-            {error && <Error text={error}/>}
+            {error && <Error text={error} />}
           </div>
           <div className="buttons-container">
-          <button
-            onClick={() => handleCloseEdit("Create")}
-          >
-            Cerrar
-          </button>
-          <button
-            onClick={() => handleCreatePrenda()}
-          >
-            Guardar 
-          </button>
+            <button onClick={() => handleCloseEdit("Create")}>Cerrar</button>
+            <button onClick={() => handleCreatePrenda()}>Guardar</button>
           </div>
         </dialog>
       </header>
@@ -748,106 +774,103 @@ export const Dashboard = () => {
             <main>
               <dialog id={`modalEdit-${clothe.id}`}>
                 <div className="modalEdit">
-                <h4>Editar Prenda</h4>
-                <div className="modalEdit-form">
-                  <form>
-                    <input
-                      type="text"
-                      id="nombre"
-                      name="nombre"
-                      placeholder="Nombre"
-                    />
-                    <select id="tipo">
-                      {tipos.map((tipo) => (
-                        <option
-                          key={`${tipo}`}
-                          value={tipo}
-                        >
-                          {tipo}
-                        </option>
-                      ))}
-                    </select>
-                    <select id="marca">
-                      {marcas.map((marca) => (
-                        <option
-                          key={`${marca.id} + ${marca.nombre}`}
-                          value={marca.id}
-                        >
-                          {marca.nombre}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      type="number"
-                      id="precio"
-                      name="precio"
-                      placeholder="Precio"
-                    />
-                    <input
-                      type="text"
-                      id="imagenes"
-                      name="imagenes"
-                      placeholder="URL de la imagen"
-                    />
-                  </form>
-                </div>
-                <div className="buttons-container">
-                <button
-                  onClick={() => handleCloseEdit("Edit", clothe.id)}
-                >
-                  Cerrar
-                </button>
-                <button
-                  onClick={() => handleUpdatePrenda(clothe.id)}
-                >
-                  Guardar
-                </button>
-                </div>
+                  <h4>Editar Prenda</h4>
+                  <div className="modalEdit-form">
+                    <form>
+                      <input
+                        type="text"
+                        id="nombre"
+                        name="nombre"
+                        placeholder="Nombre"
+                      />
+                      <select id="tipo">
+                        {tipos.map((tipo) => (
+                          <option key={`${tipo}`} value={tipo}>
+                            {tipo}
+                          </option>
+                        ))}
+                      </select>
+                      <select id="marca">
+                        {marcas.map((marca) => (
+                          <option
+                            key={`${marca.id} + ${marca.nombre}`}
+                            value={marca.id}
+                          >
+                            {marca.nombre}
+                          </option>
+                        ))}
+                      </select>
+                      <input
+                        type="number"
+                        id="precio"
+                        name="precio"
+                        placeholder="Precio"
+                      />
+                      <input
+                        type="text"
+                        id="imagenes"
+                        name="imagenes"
+                        placeholder="URL de la imagen"
+                      />
+                    </form>
+                  </div>
+                  <div className="buttons-container">
+                    <button onClick={() => handleCloseEdit("Edit", clothe.id)}>
+                      Cerrar
+                    </button>
+                    <button onClick={() => handleUpdatePrenda(clothe.id)}>
+                      Guardar
+                    </button>
+                  </div>
                 </div>
               </dialog>
 
               <header className="panelCreate" id={`panelCreate-${clothe.id}`}>
-                
                 <div className="panelCreate-container">
-                <h4>Crear Stocks</h4>
-                <div className="panelCreate-form">
-                  <label htmlFor="cantidad">Cantidad:</label>
-                  <input type="number" id={`cantidad${clothe.id}`} name="cantidad" min={1} />
-                </div>
-                <div className="panelCreate-form">
-                  <label htmlFor="color">Color:</label>
-                  <select name="color" id={`color${clothe.id}`}>
-                    {colors.map((color, index) => (
-                      <option key={index} value={color.id}>
-                        {color.nombre}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="panelCreate-form">
-                  <label htmlFor="talle">Talle:</label>
-                  <select name="talle" id={`talle${clothe.id}`}>
-                    {sizes.map((size, index) => (
-                      <option key={index} value={size.id}>
-                        {size.nombre}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                  <h4>Crear Stocks</h4>
+                  <div className="panelCreate-form">
+                    <label htmlFor="cantidad">Cantidad:</label>
+                    <input
+                      type="number"
+                      id={`cantidad${clothe.id}`}
+                      name="cantidad"
+                      min={1}
+                    />
+                  </div>
+                  <div className="panelCreate-form">
+                    <label htmlFor="color">Color:</label>
+                    <select name="color" id={`color${clothe.id}`}>
+                      {colors.map((color, index) => (
+                        <option key={index} value={color.id}>
+                          {color.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="panelCreate-form">
+                    <label htmlFor="talle">Talle:</label>
+                    <select name="talle" id={`talle${clothe.id}`}>
+                      {sizes.map((size, index) => (
+                        <option key={index} value={size.id}>
+                          {size.nombre}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
                 <div className="buttons-container">
-                <button
-                  className="dashboard-clothe-button"
-                  onClick={() => handleCreate(clothe.id)}
-                >
-                  <CiCircleRemove/>
-                </button>
-                <button
-                  className="dashboard-clothe-button"
-                  onClick={() => handleSaveStock(clothe.id)}
-                >
-                  <CiCircleCheck />
-                </button>
+                  <button
+                    className="dashboard-clothe-button"
+                    onClick={() => handleCreate(clothe.id)}
+                  >
+                    <CiCircleRemove />
+                  </button>
+                  <button
+                    className="dashboard-clothe-button"
+                    onClick={() => handleSaveStock(clothe.id)}
+                  >
+                    <CiCircleCheck />
+                  </button>
                 </div>
               </header>
             </main>
@@ -861,34 +884,49 @@ export const Dashboard = () => {
                       className="dashboard-stock-item"
                     >
                       <div className="dashboard-stock-item-info">
-                      <img
-                        src={stock.Prenda.imagenes}
-                        alt={`Imagen de la prenda ${stock.Prenda.nombre}`}
-                      />
-                      <p>Cantidad: {stock.cantidad}</p>
-                      <p>Color: {stock.Color.nombre}</p>
-                      <p>Talle: {stock.Talle.nombre}</p>
+                        <img
+                          src={stock.Prenda.imagenes}
+                          alt={`Imagen de la prenda ${stock.Prenda.nombre}`}
+                        />
+                        <p>Cantidad: {stock.cantidad}</p>
+                        <p>Color: {stock.Color.nombre}</p>
+                        <p>Talle: {stock.Talle.nombre}</p>
                       </div>
                       <div className="dashboard-stock-item-buttons">
-                      <button className="dashboard-clothe-button" onClick={() => handleView(`#modalEditStock-${stock.id}`)}>
-                        <CiEdit />
-                      </button>
-
-                      <div
-                        className="modalEditStock"
-                        id={`modalEditStock-${stock.id}`}
-                      >
-                        <input
-                          type="number"
-                          id={`edit${stock.id}`}
-                          placeholder="cantidad"
-                        />
-                        <button className="dashboard-clothe-button" onClick={() => handleEditStock(stock.id, stock.Prenda.id)}>
-                          <CiCircleCheck />
+                        <button
+                          className="dashboard-clothe-button"
+                          onClick={() =>
+                            handleView(`#modalEditStock-${stock.id}`)
+                          }
+                        >
+                          <CiEdit />
                         </button>
+                        <div
+                          className="modalEditStock"
+                          id={`modalEditStock-${stock.id}`}
+                        >
+                          <input
+                            type="number"
+                            id={`edit${stock.id}`}
+                            placeholder="cantidad"
+                          />
+                          <button
+                            className="dashboard-clothe-button"
+                            onClick={() =>
+                              handleEditStock(stock.id, stock.Prenda.id)
+                            }
+                          >
+                            <CiCircleCheck />
+                          </button>
+
+                          <button
+                            className="dashboard-clothe-button"
+                            onClick={() => handleDeleteStock(stock.id)}
+                          >
+                            <CiTrash />
+                          </button>
+                        </div>
                       </div>
-                      </div>
-                      
                     </li>
                   ))}
                 </ul>
@@ -923,41 +961,71 @@ export const Dashboard = () => {
             </button>
           </div>
           <div className="dashboard-general-container">
-          <div className="dashboard-general-subcontainer">
-          {colors &&
-            colors.map((color) => (
-              <section key={color.codigo_hex} className="dashboard-general-item">
-                <div className="dashboard-general-item-info">
-                <div className="color-hex"
-                  style={{
-                    backgroundColor: `#${color.codigo_hex}`,
-                    width: "30px",
-                    height: "30px",
-                    borderRadius: "7px",
-                  }}
-                ></div>
-                <p>{color.nombre}</p>
-                <div className="dashboard-clothe-buttons">
-                  <button className="dashboard-clothe-button" onClick={() => handleDeleteColor(color.id)}><CiTrash /></button>
-                  <button className="dashboard-clothe-button" onClick={() => handleView(`#modalEditColor${color.id}`)}><CiEdit /></button>
-                </div>
-                </div>
-                <div className="modalEditMarca" id={`modalEditColor${color.id}`}>
-                  <label htmlFor="colorPicker">Elige un color:</label>
-                  <input
-                    type="color"
-                    id={`colorPicker${color.id}`}
-                    name="color"
-                    defaultValue="#ff0000"
-                  />
-                  <label htmlFor="nombreColor">Nombre:</label>
-                  <input type="text" id={`nombreColor${color.id}`} name="color" />
-                  <button className="dashboard-clothe-button" onClick={() => handleSaveUpdateColor(color.id)}><CiCircleCheck /></button>
-                </div>
-              </section>
-            ))}            
-          </div>
-          {responseDeleteColor.error && <Error text={responseDeleteColor.error} />}
+            <div className="dashboard-general-subcontainer">
+              {colors &&
+                colors.map((color) => (
+                  <section
+                    key={color.codigo_hex}
+                    className="dashboard-general-item"
+                  >
+                    <div className="dashboard-general-item-info">
+                      <div
+                        className="color-hex"
+                        style={{
+                          backgroundColor: `#${color.codigo_hex}`,
+                          width: "30px",
+                          height: "30px",
+                          borderRadius: "7px",
+                        }}
+                      ></div>
+                      <p>{color.nombre}</p>
+                      <div className="dashboard-clothe-buttons">
+                        <button
+                          className="dashboard-clothe-button"
+                          onClick={() => handleDeleteColor(color.id)}
+                        >
+                          <CiTrash />
+                        </button>
+                        <button
+                          className="dashboard-clothe-button"
+                          onClick={() =>
+                            handleView(`#modalEditColor${color.id}`)
+                          }
+                        >
+                          <CiEdit />
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      className="modalEditMarca"
+                      id={`modalEditColor${color.id}`}
+                    >
+                      <label htmlFor="colorPicker">Elige un color:</label>
+                      <input
+                        type="color"
+                        id={`colorPicker${color.id}`}
+                        name="color"
+                        defaultValue="#ff0000"
+                      />
+                      <label htmlFor="nombreColor">Nombre:</label>
+                      <input
+                        type="text"
+                        id={`nombreColor${color.id}`}
+                        name="color"
+                      />
+                      <button
+                        className="dashboard-clothe-button"
+                        onClick={() => handleSaveUpdateColor(color.id)}
+                      >
+                        <CiCircleCheck />
+                      </button>
+                    </div>
+                  </section>
+                ))}
+            </div>
+            {responseDeleteColor.error && (
+              <Error text={responseDeleteColor.error} />
+            )}
           </div>
         </div>
         <div className="dashboard-colors-container">
@@ -972,70 +1040,133 @@ export const Dashboard = () => {
             <div id="modalCreateSize">
               <label htmlFor="nombreTalle">Nombre:</label>
               <input type="text" id="nombreTalle" name="talle" />
-              <button className="dashboard-clothe-button" onClick={handleSaveSize}><CiCircleCheck /></button>
+              <button
+                className="dashboard-clothe-button"
+                onClick={handleSaveSize}
+              >
+                <CiCircleCheck />
+              </button>
             </div>
           </div>
-          <div className="dashboard-general-container" id="dashboard-general-container-sizes">
-          <div className="dashboard-general-subcontainer">
-          {sizes &&
-            sizes.map((size) => (
-              <section key={size.nombre} className="dashboard-general-item">
-                <div className="dashboard-general-item-info">
-                <p>{size.nombre.toUpperCase()}</p>
-                <div className="dashboard-clothe-buttons">
-                  <button className="dashboard-clothe-button" onClick={() => handleDeleteSize(size.id)}><CiTrash /></button>
-                  <button className="dashboard-clothe-button" onClick={() => handleView(`#modalEditSize${size.id}`)}><CiEdit /></button>
-                </div>
-                </div>
-                <div className="modalEditMarca" id={`modalEditSize${size.id}`}>
-                  <label htmlFor="nombreSize">Nombre:</label>
-                  <input type="text" id={`nombreSize${size.id}`} name="size" />
-                  <button className="dashboard-clothe-button" onClick={() => handleSaveUpdateSize(size.id)}><CiCircleCheck /></button>
-                </div>
-              </section>
-            ))}
+          <div
+            className="dashboard-general-container"
+            id="dashboard-general-container-sizes"
+          >
+            <div className="dashboard-general-subcontainer">
+              {sizes &&
+                sizes.map((size) => (
+                  <section key={size.nombre} className="dashboard-general-item">
+                    <div className="dashboard-general-item-info">
+                      <p>{size.nombre.toUpperCase()}</p>
+                      <div className="dashboard-clothe-buttons">
+                        <button
+                          className="dashboard-clothe-button"
+                          onClick={() => handleDeleteSize(size.id)}
+                        >
+                          <CiTrash />
+                        </button>
+                        <button
+                          className="dashboard-clothe-button"
+                          onClick={() => handleView(`#modalEditSize${size.id}`)}
+                        >
+                          <CiEdit />
+                        </button>
+                      </div>
+                    </div>
+                    <div
+                      className="modalEditMarca"
+                      id={`modalEditSize${size.id}`}
+                    >
+                      <label htmlFor="nombreSize">Nombre:</label>
+                      <input
+                        type="text"
+                        id={`nombreSize${size.id}`}
+                        name="size"
+                      />
+                      <button
+                        className="dashboard-clothe-button"
+                        onClick={() => handleSaveUpdateSize(size.id)}
+                      >
+                        <CiCircleCheck />
+                      </button>
+                    </div>
+                  </section>
+                ))}
+            </div>
           </div>
-          </div>
-          {responseDeleteSize.error && <Error text={responseDeleteSize.error} />}
+          {responseDeleteSize.error && (
+            <Error text={responseDeleteSize.error} />
+          )}
         </div>
       </div>
       <div className="dashboard-colors-container">
-          <h2>Marcas</h2>
+        <h2>Marcas</h2>
+        <button
+          className="dashboard-clothe-button"
+          onClick={() => handleView("#modalCreateMarca")}
+        >
+          <CiCirclePlus />
+        </button>
+        <div id="modalCreateMarca">
+          <label htmlFor="nombreMarca">Nombre:</label>
+          <input type="text" id="nombreMarca" name="marca" />
           <button
             className="dashboard-clothe-button"
-            onClick={() => handleView("#modalCreateMarca")}
+            onClick={() => handleSaveMarca()}
           >
-            <CiCirclePlus />
+            <CiCircleCheck />
           </button>
-          <div id="modalCreateMarca">
-            <label htmlFor="nombreMarca">Nombre:</label>
-            <input type="text" id="nombreMarca" name="marca" />
-            <button className="dashboard-clothe-button" onClick={() => handleSaveMarca()}><CiCircleCheck /></button>
-          </div>
-          <div className="dashboard-general-container">
-          <div className="dashboard-general-subcontainer">
-          {marcas &&
-            marcas.map((marca) => (
-              <section key={`${marca.id} ${marca.nombre}`} className="dashboard-general-item">
-                <div className="dashboard-general-item-info">
-                <p>{marca.nombre}</p>
-                <div className="dashboard-clothe-buttons">
-                  <button className="dashboard-clothe-button" onClick={() => handleDeleteMarca(marca.id)}><CiTrash /></button>
-                  <button className="dashboard-clothe-button" onClick={() => handleView(`#modalEditMarca${marca.id}`)}><CiEdit /></button>
-                </div>
-                </div>
-                <div className="modalEditMarca" id={`modalEditMarca${marca.id}`}>
-                  <label htmlFor="nombreMarca">Nombre:</label>
-                  <input type="text" id={`nombreMarca${marca.id}`} name="marca" />
-                  <button className="dashboard-clothe-button" onClick={() => handleSaveUpdateMarca(marca.id)}><CiCircleCheck /></button>
-                </div>
-              </section>
-            ))
-          }
-          </div>
-          </div>
-          {responseDeleteMarca.error && <Error text={responseDeleteMarca.error} />}
         </div>
+        <div className="dashboard-general-container">
+          <div className="dashboard-general-subcontainer">
+            {marcas &&
+              marcas.map((marca) => (
+                <section
+                  key={`${marca.id} ${marca.nombre}`}
+                  className="dashboard-general-item"
+                >
+                  <div className="dashboard-general-item-info">
+                    <p>{marca.nombre}</p>
+                    <div className="dashboard-clothe-buttons">
+                      <button
+                        className="dashboard-clothe-button"
+                        onClick={() => handleDeleteMarca(marca.id)}
+                      >
+                        <CiTrash />
+                      </button>
+                      <button
+                        className="dashboard-clothe-button"
+                        onClick={() => handleView(`#modalEditMarca${marca.id}`)}
+                      >
+                        <CiEdit />
+                      </button>
+                    </div>
+                  </div>
+                  <div
+                    className="modalEditMarca"
+                    id={`modalEditMarca${marca.id}`}
+                  >
+                    <label htmlFor="nombreMarca">Nombre:</label>
+                    <input
+                      type="text"
+                      id={`nombreMarca${marca.id}`}
+                      name="marca"
+                    />
+                    <button
+                      className="dashboard-clothe-button"
+                      onClick={() => handleSaveUpdateMarca(marca.id)}
+                    >
+                      <CiCircleCheck />
+                    </button>
+                  </div>
+                </section>
+              ))}
+          </div>
+        </div>
+        {responseDeleteMarca.error && (
+          <Error text={responseDeleteMarca.error} />
+        )}
+      </div>
     </main>
   );
 };

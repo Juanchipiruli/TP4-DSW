@@ -62,7 +62,7 @@ html, body {
 .mainview-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
   gap: clamp(1rem, 2vw, 2rem);
   padding: clamp(1rem, 2vw, 2rem);
   width: 100%; /* Cambiado de 100vw a 100% */
@@ -73,20 +73,6 @@ html, body {
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden; /* Previene scroll horizontal */
-}
-
-/* Tablet: 2 columnas */
-@media (min-width: 600px) {
-  .mainview-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Desktop: 4 columnas */
-@media (min-width: 1024px) {
-  .mainview-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }
 
 .mainview-loading {
