@@ -22,6 +22,11 @@ export const Dashboard = () => {
 
   const { token } = useAuth();
 
+  const handleView = (id) => {
+    const modal = document.querySelector(id);
+    modal.classList.toggle("show");
+  }
+
   const responseDataClothes = useFetch({
     url: "http://localhost:3000/api/prendas/",
     options: {
@@ -31,8 +36,6 @@ export const Dashboard = () => {
       },
     },
   });
-
-
 
   const responseTipos = useFetch({
     url: "http://localhost:3000/api/prendas/types/",
@@ -79,8 +82,6 @@ export const Dashboard = () => {
     }
   }, [responseColors.data]);
 
-  
-
   const responseMarcas = useFetch({
     url: "http://localhost:3000/api/marcas/",
     options: {
@@ -90,6 +91,7 @@ export const Dashboard = () => {
       },
     },
   });
+
   useEffect(() => {
     if (responseMarcas.data) {
       setMarcas(responseMarcas.data);
@@ -340,11 +342,6 @@ export const Dashboard = () => {
     }
   }, [responseCreateStock.data]);
 
-  const handleOpenEditStock = (id) => {
-    const modalEditStock = document.querySelector(`#modalEditStock-${id}`);
-    modalEditStock.classList.toggle("show");
-  };
-
   const handleEditStock = (id) => {
     const editValue = document.querySelector(`#edit${id}`).value;
 
@@ -370,17 +367,12 @@ export const Dashboard = () => {
       [id]: updateStock,
     }));
 
-    handleOpenEditStock(id);
+    handleView(`#modalEditStock-${id}`);
   };
 
   const responseCreateColor = useFetch({ autoFetch: false });
 
   const refetchCreateColor = responseCreateColor.refetch;
-
-  const handleOpenCreateColor = () => {
-    const modalCreateColor = document.querySelector("#modalCreateColor");
-    modalCreateColor.classList.toggle("show");
-  };
 
   const handleSaveColor = async () => {
     const nombre = document.querySelector("#nombreColor").value;
@@ -404,7 +396,7 @@ export const Dashboard = () => {
   useEffect(() => {
     if (responseCreateColor.data) {
       setColors((prev) => [...prev, responseCreateColor.data]);
-      handleOpenCreateColor();
+      handleView("#modalCreateColor");
     }
   }, [responseCreateColor.data]);
 
@@ -435,13 +427,6 @@ export const Dashboard = () => {
   const responseCreateSize = useFetch({ autoFetch: false });
   const refetchCreateSize = responseCreateSize.refetch;
 
-  const handleOpenCreateSize = () => {
-    const modalCreateSize = document.querySelector("#modalCreateSize");
-    modalCreateSize.classList.toggle("show");
-  };
-
-  
-
   const handleSaveSize = async () => {
     const nombre = document.querySelector("#nombreTalle").value;
 
@@ -461,7 +446,7 @@ export const Dashboard = () => {
   useEffect(() => {
     if (responseCreateSize.data) {
       setSizes((prev) => [...prev, responseCreateSize.data]);
-      handleOpenCreateSize();
+      handleView("#modalCreateSize");
     }
   }, [responseCreateSize.data]);
 
@@ -492,11 +477,6 @@ export const Dashboard = () => {
   const responseCreateMarca = useFetch({ autoFetch: false });
   const refetchCreateMarca = responseCreateMarca.refetch;
 
-  const handleOpenCreateMarca = () => {
-    const modalCreateMarca = document.querySelector("#modalCreateMarca");
-    modalCreateMarca.classList.toggle("show");
-  };
-
   const handleSaveMarca = async () => {
     const nombre = document.querySelector("#nombreMarca").value;
     await refetchCreateMarca({
@@ -511,10 +491,11 @@ export const Dashboard = () => {
       },
     });
   };
+  
   useEffect(() => {
     if (responseCreateMarca.data) {
       setMarcas((prev) => [...prev, responseCreateMarca.data]);
-      handleOpenCreateMarca();
+      handleView("#modalCreateMarca");
     }
   }, [responseCreateMarca.data]);
 
@@ -545,11 +526,6 @@ export const Dashboard = () => {
   const responseUpdateMarca = useFetch({ autoFetch: false });
   const refetchUpdateMarca = responseUpdateMarca.refetch;
 
-  const handleOpenUpdateMarca = (id) => {
-    const modalEditMarca = document.querySelector(`#modalEditMarca${id}`);
-    modalEditMarca.classList.toggle("show");
-  }
-
   const handleSaveUpdateMarca = async (id) => {
     const nombre = document.querySelector(`#nombreMarca${id}`).value;
     await refetchUpdateMarca({
@@ -574,17 +550,12 @@ export const Dashboard = () => {
             : marca
         )
       );
-      handleOpenUpdateMarca(responseUpdateMarca.data.id);
+      handleView(`#modalEditMarca${responseUpdateMarca.data.id}`);
     }
   }, [responseUpdateMarca.data]);
 
   const responseUpdateSize = useFetch({ autoFetch: false });
   const refetchUpdateSize = responseUpdateSize.refetch;
-
-  const handleOpenUpdateSize = (id) => {
-    const modalEditSize = document.querySelector(`#modalEditSize${id}`);
-    modalEditSize.classList.toggle("show");
-  }
 
   const handleSaveUpdateSize = async (id) => {
     const nombre = document.querySelector(`#nombreSize${id}`).value;
@@ -610,17 +581,12 @@ export const Dashboard = () => {
             : size
         )
       );
-      handleOpenUpdateSize(responseUpdateSize.data.id);
+      handleView(`#modalEditSize${responseUpdateSize.data.id}`);
     }
   }, [responseUpdateSize.data]);
 
   const responseUpdateColor = useFetch({ autoFetch: false });
   const refetchUpdateColor = responseUpdateColor.refetch;
-
-  const handleOpenUpdateColor = (id) => {
-    const modalEditColor = document.querySelector(`#modalEditColor${id}`);
-    modalEditColor.classList.toggle("show");
-  }
 
   const handleSaveUpdateColor = async (id) => {
     const nombre = document.querySelector(`#nombreColor${id}`).value;
@@ -654,7 +620,7 @@ export const Dashboard = () => {
             : color
         )
       );
-      handleOpenUpdateColor(responseUpdateColor.data.id);
+      handleView(`#modalEditColor${responseUpdateColor.data.id}`);
     }
   }, [responseUpdateColor.data])
 
@@ -905,7 +871,7 @@ export const Dashboard = () => {
                       <p>Talle: {stock.Talle.nombre}</p>
                       </div>
                       <div className="dashboard-stock-item-buttons">
-                      <button className="dashboard-clothe-button" onClick={() => handleOpenEditStock(stock.id)}>
+                      <button className="dashboard-clothe-button" onClick={() => handleView(`#modalEditStock-${stock.id}`)}>
                         <CiEdit />
                       </button>
 
@@ -936,7 +902,7 @@ export const Dashboard = () => {
           <h2>Colores</h2>
           <button
             className="dashboard-clothe-button"
-            onClick={handleOpenCreateColor}
+            onClick={() => handleView("#modalCreateColor")}
           >
             <CiCirclePlus />
           </button>
@@ -974,7 +940,7 @@ export const Dashboard = () => {
                 <p>{color.nombre}</p>
                 <div className="dashboard-clothe-buttons">
                   <button className="dashboard-clothe-button" onClick={() => handleDeleteColor(color.id)}><CiTrash /></button>
-                  <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateColor(color.id)}><CiEdit /></button>
+                  <button className="dashboard-clothe-button" onClick={() => handleView(`#modalEditColor${color.id}`)}><CiEdit /></button>
                 </div>
                 </div>
                 <div className="modalEditMarca" id={`modalEditColor${color.id}`}>
@@ -1000,7 +966,7 @@ export const Dashboard = () => {
             <h2>Talles</h2>
             <button
               className="dashboard-clothe-button"
-              onClick={handleOpenCreateSize}
+              onClick={() => handleView("#modalCreateSize")}
             >
               <CiCirclePlus />
             </button>
@@ -1019,7 +985,7 @@ export const Dashboard = () => {
                 <p>{size.nombre.toUpperCase()}</p>
                 <div className="dashboard-clothe-buttons">
                   <button className="dashboard-clothe-button" onClick={() => handleDeleteSize(size.id)}><CiTrash /></button>
-                  <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateSize(size.id)}><CiEdit /></button>
+                  <button className="dashboard-clothe-button" onClick={() => handleView(`#modalEditSize${size.id}`)}><CiEdit /></button>
                 </div>
                 </div>
                 <div className="modalEditMarca" id={`modalEditSize${size.id}`}>
@@ -1038,7 +1004,7 @@ export const Dashboard = () => {
           <h2>Marcas</h2>
           <button
             className="dashboard-clothe-button"
-            onClick={() => handleOpenCreateMarca()}
+            onClick={() => handleView("#modalCreateMarca")}
           >
             <CiCirclePlus />
           </button>
@@ -1056,7 +1022,7 @@ export const Dashboard = () => {
                 <p>{marca.nombre}</p>
                 <div className="dashboard-clothe-buttons">
                   <button className="dashboard-clothe-button" onClick={() => handleDeleteMarca(marca.id)}><CiTrash /></button>
-                  <button className="dashboard-clothe-button" onClick={() => handleOpenUpdateMarca(marca.id)}><CiEdit /></button>
+                  <button className="dashboard-clothe-button" onClick={() => handleView(`#modalEditMarca${marca.id}`)}><CiEdit /></button>
                 </div>
                 </div>
                 <div className="modalEditMarca" id={`modalEditMarca${marca.id}`}>
