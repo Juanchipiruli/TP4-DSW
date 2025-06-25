@@ -17,6 +17,7 @@ body::-webkit-scrollbar{
   background: #111;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .mainview-header {
@@ -25,7 +26,7 @@ body::-webkit-scrollbar{
   justify-content: space-between;
   background: #181818;
   color: #fff;
-  padding: clamp(0.5rem, 2vw, 1rem) 0 clamp(0.5rem, 2vw, 1rem) 5px;
+  padding: clamp(0.5rem, 2vw, 1rem) 0 clamp(0.5rem, 2vw, 1rem) 0;
   text-align: center;
   font-size: clamp(1.5rem, 5vw, 2.5rem);
   letter-spacing: 0.2em;
@@ -66,10 +67,10 @@ body::-webkit-scrollbar{
 .mainview-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 350px));
   gap: clamp(1rem, 2vw, 2rem);
   padding: clamp(1rem, 2vw, 2rem) 10px clamp(1rem, 2vw, 2rem) 10px;
-  width: 100%; /* Cambiado de 100vw a 100% */
+  width: 100%; 
   box-sizing: border-box;
   align-items: start;
   justify-items: center;
@@ -90,4 +91,11 @@ h1{
   margin:0px;
   border: none;
   padding: 0;
+}
+
+
+@media (max-width: 1500px) {
+  .mainview-grid{
+    justify-content:space-around;
+  }
 }
