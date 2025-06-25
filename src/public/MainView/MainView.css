@@ -74,7 +74,6 @@ body::-webkit-scrollbar{
   box-sizing: border-box;
   align-items: start;
   justify-items: center;
-  justify-content: space-around;
   background: #111;
   min-height: 0;
   overflow-y: auto;
@@ -92,4 +91,11 @@ h1{
   margin:0px;
   border: none;
   padding: 0;
+}
+
+
+@media (max-width: 1500px) {
+  .mainview-grid{
+    justify-content:space-around
+  }
 }
