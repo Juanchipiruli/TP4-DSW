@@ -11,7 +11,6 @@ export const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(user);
     if (user) {
       if (user.isAdmin) {
         return navigate(AppRoutes.dashboard);
