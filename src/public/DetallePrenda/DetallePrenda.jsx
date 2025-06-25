@@ -18,6 +18,7 @@ export const DetallePrenda = () => {
   const [colorSeleccionado, setColorSeleccionado] = useState("");
   const [talleSeleccionado, setTalleSeleccionado] = useState("");
   const [cantidad, setCantidad] = useState(1);
+  const { isAuthenticated } = useAuth();
 
   const { cart, setCart } = useCart();
   const { token } = useAuth();
@@ -251,7 +252,9 @@ export const DetallePrenda = () => {
             </div>
           )}
 
-          {/* Selector de cantidad */}
+          {isAuthenticated() && (
+            <>
+            {/* Selector de cantidad */}
           <div className="detalle-selector">
             <h3>Cantidad:</h3>
             <div className="detalle-cantidad">
@@ -281,6 +284,8 @@ export const DetallePrenda = () => {
           >
             {cantidadDisponible === 0 ? "No disponible" : <FaCartShopping />}
           </button>
+            </>
+          )}
         </div>
       </div>
     </div>

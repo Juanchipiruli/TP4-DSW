@@ -8,6 +8,10 @@ html, body {
   overflow-x: hidden; /* Previene scroll horizontal */
 }
 
+body::-webkit-scrollbar{
+  display: none;
+}
+
 .mainview-container {
   min-height: 100vh;
   background: #111;
@@ -62,9 +66,9 @@ html, body {
 .mainview-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 350px));
   gap: clamp(1rem, 2vw, 2rem);
-  padding: clamp(1rem, 2vw, 2rem);
+  padding: clamp(1rem, 2vw, 2rem) 10px clamp(1rem, 2vw, 2rem) 10px;
   width: 100%; /* Cambiado de 100vw a 100% */
   box-sizing: border-box;
   align-items: start;

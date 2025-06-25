@@ -9,9 +9,9 @@ import { Error } from "../../components";
 
 export const CartSidebar = ({ open, onClose }) => {
   const [update, setUpdate] = useState(null);
-
   const { cart, setCart } = useCart();
   const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const responseDeleteItem = useFetch({ autoFetch: false });
   const refetchDeleteItem = responseDeleteItem.refetch;
